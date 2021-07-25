@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script src="../../storage.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="shortcut icon" href="../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../smithay/index.html'><div class='logo-container'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><a id="settings-menu" href="../../settings.html"><img src="../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1"> 1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src&#x2F;lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../smithay/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1"> 1</span>
 <span id="2"> 2</span>
 <span id="3"> 3</span>
 <span id="4"> 4</span>
@@ -52,9 +52,79 @@
 <span id="52">52</span>
 <span id="53">53</span>
 <span id="54">54</span>
-</pre><div class="example-wrap"><pre class="rust ">
-<span class="attribute">#![<span class="ident">warn</span>(<span class="ident">missing_docs</span>, <span class="ident">rust_2018_idioms</span>)]</span>
-<span class="doccomment">//! **Smithay: the Wayland compositor smithy**</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+</pre><pre class="rust">
+<span class="attribute">#![<span class="ident">warn</span>(<span class="ident">missing_docs</span>, <span class="ident">missing_debug_implementations</span>, <span class="ident">rust_2018_idioms</span>)]</span>
+<span class="comment">// Allow acronyms like EGL</span>
+<span class="attribute">#![<span class="ident">allow</span>(<span class="ident">clippy::upper_case_acronyms</span>)]</span>
+
+<span class="doccomment">//! # Smithay: the Wayland compositor smithy</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! This crate is a general framework for build wayland compositors. It currently focuses on low-level,</span>
+<span class="doccomment">//! helpers and abstractions, handling most of the system-level and wayland protocol interactions.</span>
+<span class="doccomment">//! The window management and drawing logic is however at the time not provided (but helpers for this</span>
+<span class="doccomment">//! are planned for future version).</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ## Structure of the crate</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! The provided helpers are split into two main modules. [`backend`] contains helpers for interacting with</span>
+<span class="doccomment">//! the operating system, such as session management, interactions with the graphic stack and input</span>
+<span class="doccomment">//! processing. On the other hand, [`wayland`] contains helpers for interacting with wayland clients</span>
+<span class="doccomment">//! according to the wayland protocol. In addition, the [`xwayland`] module contains helpers for managing</span>
+<span class="doccomment">//! an XWayland instance if you want to support it. See the documentation of these respective modules for</span>
+<span class="doccomment">//! information about their usage.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ## General principles for using Smithay</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ### The event loop and state handling</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Smithay is built around [`calloop`], a callback-oriented event loop, which fits naturally with the</span>
+<span class="doccomment">//! general behavior of a wayland compositor: waiting for events to occur and react to them (be it</span>
+<span class="doccomment">//! client requests, user input, or hardware events such as `vblank`).</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Using a callback-heavy structure however poses the question of state management: a lot of state needs</span>
+<span class="doccomment">//! to be accessed from many different callbacks. To avoid an heavy requirement on shared pointers such</span>
+<span class="doccomment">//! as `Rc` and `Arc` and the synchronization they require, [`calloop`] allows you to provide a mutable</span>
+<span class="doccomment">//! reference to a value, that will be passed down to most callbacks (possibly under the form of a</span>
+<span class="doccomment">//! [`DispatchData`](::wayland_server::DispatchData) for wayland-related callbacks). This structure provides</span>
+<span class="doccomment">//! easy access to a centralized mutable state without synchronization (as the callback invocation is</span>
+<span class="doccomment">//! *always* sequential), and is the recommended way to of structuring your compositor.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! Several objects, in particular on the wayland clients side, can exist as multiple instances where each</span>
+<span class="doccomment">//! instance has its own associated state. For these situations, these objects provide an interface allowing</span>
+<span class="doccomment">//! you to associate an arbitrary value to them, that you can access at any time from the object itself</span>
+<span class="doccomment">//! (rather than having your own container in which you search for the appropriate value when you need it).</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ### Logging</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! Most entry points in the modules can take an optional [`slog::Logger`](::slog::Logger) as argument</span>
 <span class="doccomment">//! that will be used as a drain for logging. If `None` is provided, the behavior depends on</span>
@@ -62,25 +132,13 @@
 <span class="doccomment">//! `log` crate. If not, the logs will discarded. This cargo feature is part of the default set of</span>
 <span class="doccomment">//! features of Smithay.</span>
 
-<span class="comment">// `error_chain!` can recurse deeply</span>
-<span class="attribute">#![<span class="ident">recursion_limit</span> <span class="op">=</span> <span class="string">&quot;1024&quot;</span>]</span>
-
-<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;backend_session&quot;</span>, <span class="ident">macro_use</span>)]</span>
 <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
 <span class="kw">pub</span> <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">nix</span>;
-<span class="attribute">#[<span class="ident">macro_use</span>]</span>
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">slog</span>;
-<span class="attribute">#[<span class="ident">macro_use</span>]</span>
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">lazy_static</span>;
-<span class="attribute">#[<span class="ident">macro_use</span>]</span>
-<span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">bitflags</span>;
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">backend</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">utils</span>;
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;wayland_frontend&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">wayland</span>;
-
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">signaling</span>;
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;xwayland&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">xwayland</span>;
@@ -88,24 +146,28 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">reexports</span>;
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;slog-stdlog&quot;</span>)]</span>
-<span class="kw">fn</span> <span class="ident">slog_or_fallback</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span>(<span class="ident">logger</span>: <span class="ident">L</span>) <span class="op">-</span><span class="op">&gt;</span> ::<span class="ident">slog</span>::<span class="ident">Logger</span>
+<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
+<span class="kw">fn</span> <span class="ident">slog_or_fallback</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span>(<span class="ident">logger</span>: <span class="ident">L</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">::slog::Logger</span>
 <span class="kw">where</span>
-    <span class="ident">L</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span>::<span class="ident">slog</span>::<span class="ident">Logger</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">L</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">::slog::Logger</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 {
-    <span class="kw">use</span> <span class="ident">slog</span>::<span class="ident">Drain</span>;
+    <span class="kw">use</span> <span class="ident">slog::Drain</span>;
     <span class="ident">logger</span>
         .<span class="ident">into</span>()
-        .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> ::<span class="ident">slog</span>::<span class="ident">Logger</span>::<span class="ident">root</span>(::<span class="ident">slog_stdlog</span>::<span class="ident">StdLog</span>.<span class="ident">fuse</span>(), <span class="macro">o</span><span class="macro">!</span>()))
+        .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">::slog::Logger::root</span>(<span class="ident">::slog_stdlog::StdLog</span>.<span class="ident">fuse</span>(), <span class="macro">slog::o!</span>()))
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;slog-stdlog&quot;</span>))]</span>
-<span class="kw">fn</span> <span class="ident">slog_or_fallback</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span>(<span class="ident">logger</span>: <span class="ident">L</span>) <span class="op">-</span><span class="op">&gt;</span> ::<span class="ident">slog</span>::<span class="ident">Logger</span>
+<span class="attribute">#[<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
+<span class="kw">fn</span> <span class="ident">slog_or_fallback</span><span class="op">&lt;</span><span class="ident">L</span><span class="op">&gt;</span>(<span class="ident">logger</span>: <span class="ident">L</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">::slog::Logger</span>
 <span class="kw">where</span>
-    <span class="ident">L</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span>::<span class="ident">slog</span>::<span class="ident">Logger</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">L</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">::slog::Logger</span><span class="op">&gt;</span><span class="op">&gt;</span>,
 {
     <span class="ident">logger</span>
         .<span class="ident">into</span>()
-        .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> ::<span class="ident">slog</span>::<span class="ident">Logger</span>::<span class="ident">root</span>(::<span class="ident">slog</span>::<span class="ident">Discard</span>, <span class="macro">o</span><span class="macro">!</span>()))
+        .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">::slog::Logger::root</span>(<span class="ident">::slog::Discard</span>, <span class="macro">slog::o!</span>()))
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../";window.currentCrate = "smithay";</script><script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script><script defer src="../../search-index.js"></script></body></html>
+</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="smithay" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
+    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script>
+</body></html>
