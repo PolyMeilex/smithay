@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src&#x2F;wayland&#x2F;shell&#x2F;xdg&#x2F;zxdgv6_handlers.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>zxdgv6_handlers.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../../../storage.js"></script><script src="../../../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../../smithay/index.html'><div class='logo-container rust-logo'><img src='../../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input"name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src&#x2F;wayland&#x2F;shell&#x2F;xdg&#x2F;zxdgv6_handlers.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>zxdgv6_handlers.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../../../storage.js"></script><script src="../../../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../../../noscript.css"></noscript><link rel="icon" type="image/svg+xml" href="../../../../../favicon.svg"><link rel="alternate icon" type="image/png" href="../../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../../favicon-32x32.png"><style type="text/css">#crate-search{background-image:url("../../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../../smithay/index.html'><div class='logo-container rust-logo'><img src='../../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -819,12 +819,29 @@
 <span id="819">819</span>
 <span id="820">820</span>
 <span id="821">821</span>
+<span id="822">822</span>
+<span id="823">823</span>
+<span id="824">824</span>
+<span id="825">825</span>
+<span id="826">826</span>
+<span id="827">827</span>
+<span id="828">828</span>
+<span id="829">829</span>
+<span id="830">830</span>
+<span id="831">831</span>
+<span id="832">832</span>
+<span id="833">833</span>
+<span id="834">834</span>
+<span id="835">835</span>
+<span id="836">836</span>
+<span id="837">837</span>
 </pre><pre class="rust">
 <span class="kw">use</span> <span class="ident">std::sync::atomic</span>::{<span class="ident">AtomicBool</span>, <span class="ident">Ordering</span>};
-<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">cell::RefCell</span>, <span class="ident">ops::Deref</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">sync::Mutex</span>};
+<span class="kw">use</span> <span class="ident">std::sync::Arc</span>;
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">ops::Deref</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">sync::Mutex</span>};
 
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::wayland::compositor</span>;
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::wayland::shell::xdg::PopupState</span>;
+<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::wayland::shell::xdg</span>::{<span class="ident">PopupState</span>, <span class="ident">ZXDG_POPUP_ROLE</span>, <span class="ident">ZXDG_TOPLEVEL_ROLE</span>};
 <span class="kw">use</span> <span class="kw">crate</span><span class="ident">::wayland::Serial</span>;
 <span class="kw">use</span> <span class="ident">wayland_protocols</span>::{
     <span class="ident">unstable::xdg_shell::v6::server</span>::{
@@ -842,9 +859,6 @@
     <span class="ident">ShellData</span>, <span class="ident">SurfaceCachedState</span>, <span class="ident">ToplevelConfigure</span>, <span class="ident">ToplevelKind</span>, <span class="ident">XdgPopupSurfaceRoleAttributes</span>,
     <span class="ident">XdgRequest</span>, <span class="ident">XdgToplevelSurfaceRoleAttributes</span>,
 };
-
-<span class="kw">static</span> <span class="ident">ZXDG_TOPLEVEL_ROLE</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;zxdg_toplevel&quot;</span>;
-<span class="kw">static</span> <span class="ident">ZXDG_POPUP_ROLE</span>: <span class="kw-2">&amp;</span><span class="ident">str</span> <span class="op">=</span> <span class="string">&quot;zxdg_popup&quot;</span>;
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">implement_shell</span>(
     <span class="ident">shell</span>: <span class="ident">Main</span><span class="op">&lt;</span><span class="ident">zxdg_shell_v6::ZxdgShellV6</span><span class="op">&gt;</span>,
@@ -940,9 +954,9 @@
         <span class="kw">let</span> <span class="ident">mutex</span> <span class="op">=</span> <span class="ident">positioner</span>
             .<span class="ident">as_ref</span>()
             .<span class="ident">user_data</span>()
-            .<span class="ident">get</span>::<span class="op">&lt;</span><span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">PositionerState</span><span class="op">&gt;</span><span class="op">&gt;</span>()
+            .<span class="ident">get</span>::<span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">PositionerState</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>()
             .<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state</span> <span class="op">=</span> <span class="ident">mutex</span>.<span class="ident">borrow_mut</span>();
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">state</span> <span class="op">=</span> <span class="ident">mutex</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
         <span class="kw">match</span> <span class="ident">request</span> {
             <span class="ident">zxdg_positioner_v6::Request::Destroy</span> <span class="op">=</span><span class="op">&gt;</span> {
                 <span class="comment">// handled by destructor</span>
@@ -1003,7 +1017,7 @@
     <span class="ident">positioner</span>
         .<span class="ident">as_ref</span>()
         .<span class="ident">user_data</span>()
-        .<span class="ident">set</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">RefCell::new</span>(<span class="ident">PositionerState::default</span>()));
+        .<span class="ident">set</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">Arc::new</span>(<span class="ident">Mutex::new</span>(<span class="ident">PositionerState::default</span>())));
 
     <span class="ident">positioner</span>.<span class="ident">deref</span>().<span class="ident">clone</span>()
 }
@@ -1107,10 +1121,8 @@
             <span class="kw">let</span> <span class="ident">positioner_data</span> <span class="op">=</span> <span class="ident">positioner</span>
                 .<span class="ident">as_ref</span>()
                 .<span class="ident">user_data</span>()
-                .<span class="ident">get</span>::<span class="op">&lt;</span><span class="ident">RefCell</span><span class="op">&lt;</span><span class="ident">PositionerState</span><span class="op">&gt;</span><span class="op">&gt;</span>()
-                .<span class="ident">unwrap</span>()
-                .<span class="ident">borrow</span>()
-                .<span class="ident">clone</span>();
+                .<span class="ident">get</span>::<span class="op">&lt;</span><span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">PositionerState</span><span class="op">&gt;</span><span class="op">&gt;</span><span class="op">&gt;</span>()
+                .<span class="ident">unwrap</span>();
 
             <span class="kw">let</span> <span class="ident">parent_surface</span> <span class="op">=</span> {
                 <span class="kw">let</span> <span class="ident">parent_data</span> <span class="op">=</span> <span class="ident">parent</span>.<span class="ident">as_ref</span>().<span class="ident">user_data</span>().<span class="ident">get</span>::<span class="op">&lt;</span><span class="ident">XdgSurfaceUserData</span><span class="op">&gt;</span>().<span class="ident">unwrap</span>();
@@ -1125,8 +1137,9 @@
                 <span class="ident">parent</span>: <span class="prelude-val">Some</span>(<span class="ident">parent_surface</span>),
                 <span class="ident">server_pending</span>: <span class="prelude-val">Some</span>(<span class="ident">PopupState</span> {
                     <span class="comment">// Set the positioner data as the popup geometry</span>
-                    <span class="ident">geometry</span>: <span class="ident">positioner_data</span>.<span class="ident">get_geometry</span>(),
+                    <span class="ident">geometry</span>: <span class="ident">positioner_data</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>().<span class="ident">get_geometry</span>(),
                 }),
+                <span class="ident">positioner</span>: <span class="ident">positioner_data</span>.<span class="ident">clone</span>(),
                 ..<span class="ident">Default::default</span>()
             };
             <span class="kw">if</span> <span class="ident">compositor::give_role</span>(<span class="ident">surface</span>, <span class="ident">ZXDG_POPUP_ROLE</span>).<span class="ident">is_err</span>() {
@@ -1385,16 +1398,18 @@
             <span class="comment">// all it done by the destructor</span>
         }
         <span class="ident">zxdg_toplevel_v6::Request::SetParent</span> { <span class="ident">parent</span> } <span class="op">=</span><span class="op">&gt;</span> {
-            <span class="ident">with_surface_toplevel_role_data</span>(<span class="kw-2">&amp;</span><span class="ident">toplevel</span>, <span class="op">|</span><span class="ident">data</span><span class="op">|</span> {
-                <span class="ident">data</span>.<span class="ident">parent</span> <span class="op">=</span> <span class="ident">parent</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">toplevel_surface_parent</span><span class="op">|</span> {
-                    <span class="kw">let</span> <span class="ident">parent_data</span> <span class="op">=</span> <span class="ident">toplevel_surface_parent</span>
-                        .<span class="ident">as_ref</span>()
-                        .<span class="ident">user_data</span>()
-                        .<span class="ident">get</span>::<span class="op">&lt;</span><span class="ident">ShellSurfaceUserData</span><span class="op">&gt;</span>()
-                        .<span class="ident">unwrap</span>();
-                    <span class="ident">parent_data</span>.<span class="ident">wl_surface</span>.<span class="ident">clone</span>()
-                })
+            <span class="kw">let</span> <span class="ident">parent_surface</span> <span class="op">=</span> <span class="ident">parent</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">toplevel_surface_parent</span><span class="op">|</span> {
+                <span class="ident">toplevel_surface_parent</span>
+                    .<span class="ident">as_ref</span>()
+                    .<span class="ident">user_data</span>()
+                    .<span class="ident">get</span>::<span class="op">&lt;</span><span class="ident">ShellSurfaceUserData</span><span class="op">&gt;</span>()
+                    .<span class="ident">unwrap</span>()
+                    .<span class="ident">wl_surface</span>
+                    .<span class="ident">clone</span>()
             });
+
+            <span class="comment">// Parent is not double buffered, we can set it directly</span>
+            <span class="ident">set_parent</span>(<span class="kw-2">&amp;</span><span class="ident">toplevel</span>, <span class="ident">parent_surface</span>);
         }
         <span class="ident">zxdg_toplevel_v6::Request::SetTitle</span> { <span class="ident">title</span> } <span class="op">=</span><span class="op">&gt;</span> {
             <span class="comment">// Title is not double buffered, we can set it directly</span>
@@ -1640,6 +1655,23 @@
         <span class="number">0b1010</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">xdg_positioner::Anchor::BottomRight</span>),
         <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
     }
+}
+
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">get_parent</span>(<span class="ident">toplevel</span>: <span class="kw-2">&amp;</span><span class="ident">zxdg_toplevel_v6::ZxdgToplevelV6</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">wl_surface::WlSurface</span><span class="op">&gt;</span> {
+    <span class="ident">with_surface_toplevel_role_data</span>(<span class="ident">toplevel</span>, <span class="op">|</span><span class="ident">data</span><span class="op">|</span> <span class="ident">data</span>.<span class="ident">parent</span>.<span class="ident">clone</span>())
+}
+
+<span class="doccomment">/// Sets the parent of the specified toplevel surface.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// The parent must be a toplevel surface.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// The parent of a surface is not double buffered and therefore may be set directly.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// If the parent is `None`, the parent-child relationship is removed.</span>
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">set_parent</span>(<span class="ident">toplevel</span>: <span class="kw-2">&amp;</span><span class="ident">zxdg_toplevel_v6::ZxdgToplevelV6</span>, <span class="ident">parent</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">wl_surface::WlSurface</span><span class="op">&gt;</span>) {
+    <span class="ident">with_surface_toplevel_role_data</span>(<span class="ident">toplevel</span>, <span class="op">|</span><span class="ident">data</span><span class="op">|</span> {
+        <span class="ident">data</span>.<span class="ident">parent</span> <span class="op">=</span> <span class="ident">parent</span>;
+    });
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../../../" data-current-crate="smithay" data-search-index-js="../../../../../search-index.js" data-search-js="../../../../../search.js"></div>
