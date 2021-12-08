@@ -208,6 +208,7 @@ pub fn run_x11(log: Logger) {
     state.start_xwayland();
 
     info!(log, "Initialization completed, starting the main loop.");
+    
 
     while state.running.load(Ordering::SeqCst) {
         let mut space = state.space.borrow_mut();
@@ -229,6 +230,10 @@ pub fn run_x11(log: Logger) {
             if let Err(err) = renderer.bind(buffer) {
                 error!(log, "Error while binding buffer: {}", err);
                 continue;
+            }
+
+            if let Some(mut renderdoc) = state.renderdoc.as_mut() {
+                renderdoc.start_frame_capture(renderer.egl.context, std::ptr::null());
             }
 
             let mut elements = Vec::new();
@@ -305,6 +310,10 @@ pub fn run_x11(log: Logger) {
                     error!(log, "Rendering error: {}", err);
                     // TODO: convert RenderError into SwapBuffersError and skip temporary (will retry) and panic on ContextLost or recreate
                 }
+            }
+    
+            if let Some(mut renderdoc) = state.renderdoc.as_mut() {
+                renderdoc.end_frame_capture(renderer.egl.context, std::ptr::null());
             }
 
             #[cfg(feature = "debug")]
