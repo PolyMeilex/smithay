@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src&#x2F;backend&#x2F;egl&#x2F;error.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>error.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../../storage.js"></script><script src="../../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../smithay/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src&#x2F;backend&#x2F;egl&#x2F;error.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>error.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../../storage.js"></script><script src="../../../../crates.js"></script><script defer src="../../../../main.js"></script><script defer src="../../../../source-script.js"></script><script defer src="../../../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a class="sidebar-logo" href='../../../../smithay/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container rust-logo" href='../../../../smithay/index.html'><img src='../../../../rust-logo.png' alt='logo'></a><nav class="sub"><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -140,6 +141,11 @@
 <span id="140">140</span>
 <span id="141">141</span>
 <span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">super</span>::ffi</span>;
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">thiserror::Error</span>, <span class="ident">Debug</span>)]</span>
@@ -187,6 +193,9 @@
     <span class="doccomment">/// Failed to create `EGLBuffer` from the buffer</span>
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed to create `EGLBuffer` from the buffer&quot;</span>)]</span>
     <span class="ident">EGLImageCreationFailed</span>,
+    <span class="doccomment">/// Failed to query the available `EGLDevice`s</span>
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;Failed to query the available `EGLDevice`s&quot;</span>)]</span>
+    <span class="ident">QueryDevices</span>(<span class="attribute">#[<span class="ident">source</span>]</span> <span class="ident">EGLError</span>),
 }
 
 <span class="doccomment">/// Raw EGL error</span>
@@ -215,6 +224,9 @@
     <span class="doccomment">/// The current surface of the calling thread is a window, pixel buffer or pixmap that is no longer valid.</span>
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;The current surface of the calling thread is a window, pixel buffer or pixmap that is no longer valid.&quot;</span>)]</span>
     <span class="ident">BadCurrentSurface</span>,
+    <span class="doccomment">/// An EGLDevice argument is not valid for this display.</span>
+    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;An EGLDevice argument is not valid for this display.&quot;</span>)]</span>
+    <span class="ident">BadDevice</span>,
     <span class="doccomment">/// An EGLDisplay argument does not name a valid EGL display connection.</span>
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;An EGLDisplay argument does not name a valid EGL display connection.&quot;</span>)]</span>
     <span class="ident">BadDisplay</span>,
@@ -233,7 +245,6 @@
     <span class="doccomment">/// A NativeWindowType argument does not refer to a valid native window.</span>
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;A NativeWindowType argument does not refer to a valid native window.&quot;</span>)]</span>
     <span class="ident">BadNativeWindow</span>,
-    <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;backend_drm_eglstream&quot;</span>)]</span>
     <span class="doccomment">/// The EGL operation failed due to temporary unavailability of a requested resource, but the arguments were otherwise valid, and a subsequent attempt may succeed.</span>
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;The EGL operation failed due to temporary unavailability of a requested resource, but the arguments were otherwise valid, and a subsequent attempt may succeed.&quot;</span>)]</span>
     <span class="ident">ResourceBusy</span>,
@@ -254,13 +265,13 @@
             <span class="ident">ffi::egl::BAD_ATTRIBUTE</span> =&gt; <span class="ident">EGLError::BadAttribute</span>,
             <span class="ident">ffi::egl::BAD_CONTEXT</span> =&gt; <span class="ident">EGLError::BadContext</span>,
             <span class="ident">ffi::egl::BAD_CURRENT_SURFACE</span> =&gt; <span class="ident">EGLError::BadCurrentSurface</span>,
+            <span class="ident">ffi::egl::BAD_DEVICE_EXT</span> =&gt; <span class="ident">EGLError::BadDevice</span>,
             <span class="ident">ffi::egl::BAD_DISPLAY</span> =&gt; <span class="ident">EGLError::BadDisplay</span>,
             <span class="ident">ffi::egl::BAD_SURFACE</span> =&gt; <span class="ident">EGLError::BadSurface</span>,
             <span class="ident">ffi::egl::BAD_MATCH</span> =&gt; <span class="ident">EGLError::BadMatch</span>,
             <span class="ident">ffi::egl::BAD_PARAMETER</span> =&gt; <span class="ident">EGLError::BadParameter</span>,
             <span class="ident">ffi::egl::BAD_NATIVE_PIXMAP</span> =&gt; <span class="ident">EGLError::BadNativePixmap</span>,
             <span class="ident">ffi::egl::BAD_NATIVE_WINDOW</span> =&gt; <span class="ident">EGLError::BadNativeWindow</span>,
-            <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;backend_drm_eglstream&quot;</span>)]</span>
             <span class="ident">ffi::egl::RESOURCE_BUSY_EXT</span> =&gt; <span class="ident">EGLError::ResourceBusy</span>,
             <span class="ident">ffi::egl::CONTEXT_LOST</span> =&gt; <span class="ident">EGLError::ContextLost</span>,
             <span class="ident">x</span> =&gt; <span class="ident">EGLError::Unknown</span>(<span class="ident">x</span>),
@@ -283,6 +294,5 @@
     <span class="ident">EGLError::from_last_call</span>().<span class="ident">map</span>(<span class="op">|</span>()<span class="op">|</span> <span class="ident">res</span>)
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="smithay" data-search-index-js="../../../../search-index.js" data-search-js="../../../../search.js"></div>
-    <script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="smithay" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.59.0-nightly (928783de6 2021-12-11)" ></div>
 </body></html>

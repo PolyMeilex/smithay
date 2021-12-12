@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src&#x2F;wayland&#x2F;shell&#x2F;xdg&#x2F;mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../../../storage.js"></script><script src="../../../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../../smithay/index.html'><div class='logo-container rust-logo'><img src='../../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">   1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src&#x2F;wayland&#x2F;shell&#x2F;xdg&#x2F;mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../../../storage.js"></script><script src="../../../../../crates.js"></script><script defer src="../../../../../main.js"></script><script defer src="../../../../../source-script.js"></script><script defer src="../../../../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a class="sidebar-logo" href='../../../../../smithay/index.html'><div class='logo-container rust-logo'><img src='../../../../../rust-logo.png' alt='logo'></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container rust-logo" href='../../../../../smithay/index.html'><img src='../../../../../rust-logo.png' alt='logo'></a><nav class="sub"><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">   1</span>
 <span id="2">   2</span>
 <span id="3">   3</span>
 <span id="4">   4</span>
@@ -1658,6 +1659,60 @@
 <span id="1658">1658</span>
 <span id="1659">1659</span>
 <span id="1660">1660</span>
+<span id="1661">1661</span>
+<span id="1662">1662</span>
+<span id="1663">1663</span>
+<span id="1664">1664</span>
+<span id="1665">1665</span>
+<span id="1666">1666</span>
+<span id="1667">1667</span>
+<span id="1668">1668</span>
+<span id="1669">1669</span>
+<span id="1670">1670</span>
+<span id="1671">1671</span>
+<span id="1672">1672</span>
+<span id="1673">1673</span>
+<span id="1674">1674</span>
+<span id="1675">1675</span>
+<span id="1676">1676</span>
+<span id="1677">1677</span>
+<span id="1678">1678</span>
+<span id="1679">1679</span>
+<span id="1680">1680</span>
+<span id="1681">1681</span>
+<span id="1682">1682</span>
+<span id="1683">1683</span>
+<span id="1684">1684</span>
+<span id="1685">1685</span>
+<span id="1686">1686</span>
+<span id="1687">1687</span>
+<span id="1688">1688</span>
+<span id="1689">1689</span>
+<span id="1690">1690</span>
+<span id="1691">1691</span>
+<span id="1692">1692</span>
+<span id="1693">1693</span>
+<span id="1694">1694</span>
+<span id="1695">1695</span>
+<span id="1696">1696</span>
+<span id="1697">1697</span>
+<span id="1698">1698</span>
+<span id="1699">1699</span>
+<span id="1700">1700</span>
+<span id="1701">1701</span>
+<span id="1702">1702</span>
+<span id="1703">1703</span>
+<span id="1704">1704</span>
+<span id="1705">1705</span>
+<span id="1706">1706</span>
+<span id="1707">1707</span>
+<span id="1708">1708</span>
+<span id="1709">1709</span>
+<span id="1710">1710</span>
+<span id="1711">1711</span>
+<span id="1712">1712</span>
+<span id="1713">1713</span>
+<span id="1714">1714</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Utilities for handling shell surfaces with the `xdg_shell` protocol</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! This module provides automatic handling of shell surfaces objects, by being registered</span>
@@ -1734,6 +1789,8 @@
     <span class="ident">sync</span>::{<span class="ident">Arc</span>, <span class="ident">Mutex</span>},
 };
 
+<span class="kw">use</span> <span class="ident">wayland_protocols::unstable::xdg_decoration</span>;
+<span class="kw">use</span> <span class="ident">wayland_protocols::unstable::xdg_decoration::v1::server::zxdg_toplevel_decoration_v1</span>;
 <span class="kw">use</span> <span class="ident">wayland_protocols::xdg_shell::server::xdg_surface</span>;
 <span class="kw">use</span> <span class="ident">wayland_protocols::xdg_shell::server</span>::{<span class="ident">xdg_popup</span>, <span class="ident">xdg_positioner</span>, <span class="ident">xdg_toplevel</span>, <span class="ident">xdg_wm_base</span>};
 <span class="kw">use</span> <span class="ident">wayland_server::DispatchData</span>;
@@ -1742,7 +1799,11 @@
     <span class="ident">Display</span>, <span class="ident">Filter</span>, <span class="ident">Global</span>, <span class="ident">UserDataMap</span>,
 };
 
+<span class="kw">use</span> <span class="ident"><span class="self">self</span>::xdg_handlers::ShellSurfaceUserData</span>;
+
 <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::PingError</span>;
+
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">decoration</span>;
 
 <span class="comment">// handlers for the xdg_shell protocol</span>
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">mod</span> <span class="ident">xdg_handlers</span>;
@@ -1783,40 +1844,62 @@
 <span class="kw">const</span> <span class="ident">XDG_TOPLEVEL_STATE_TILED_SINCE</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">2</span>;
 
 <span class="macro">macro_rules!</span> <span class="ident">xdg_role</span> {
-    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">configure</span>:<span class="ident">ty</span>,
-     $(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">attr</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">element</span>:<span class="ident">ident</span> {$($(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field_attr</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vis</span>:<span class="ident">vis</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>:<span class="ident">ident</span>:<span class="macro-nonterminal">$</span><span class="kw">type</span>:<span class="macro-nonterminal">ty</span>),<span class="kw-2">*</span>},
-     <span class="macro-nonterminal">$</span><span class="macro-nonterminal">role_ack_configure</span>:<span class="ident">expr</span>) =&gt; {
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">state</span>:<span class="ident">ty</span>,
+     $(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">configure_meta</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">configure_name</span>:<span class="ident">ident</span> $({$($(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">configure_field_meta</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">configure_field_vis</span>:<span class="ident">vis</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">configure_field_name</span>:<span class="ident">ident</span>:<span class="macro-nonterminal">$</span><span class="macro-nonterminal">configure_field_type</span>:<span class="ident">ty</span>),<span class="kw-2">*</span>}),<span class="kw-2">*</span>,
+     $(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">attributes_meta</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">attributes_name</span>:<span class="ident">ident</span> {$($(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">attributes_field_meta</span>:<span class="ident">meta</span>]</span>)<span class="op">*</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">attributes_field_vis</span>:<span class="ident">vis</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">attributes_field_name</span>:<span class="ident">ident</span>:<span class="macro-nonterminal">$</span><span class="macro-nonterminal">attributes_field_type</span>:<span class="ident">ty</span>),<span class="kw-2">*</span>}) =&gt; {
 
-        $(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">attr</span>]</span>)<span class="op">*</span>
-        <span class="kw">pub</span> <span class="kw">struct</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">element</span> {
+        $(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">configure_meta</span>]</span>)<span class="op">*</span>
+        <span class="kw">pub</span> <span class="kw">struct</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">configure_name</span> {
+                <span class="doccomment">/// The state associated with this configure</span>
+                <span class="kw">pub</span> <span class="ident">state</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">state</span>,
+                <span class="doccomment">/// A serial number to track ACK from the client</span>
+                <span class="doccomment">///</span>
+                <span class="doccomment">/// This should be an ever increasing number, as the ACK-ing</span>
+                <span class="doccomment">/// from a client for a serial will validate all pending lower</span>
+                <span class="doccomment">/// serials.</span>
+                <span class="kw">pub</span> <span class="ident">serial</span>: <span class="ident">Serial</span>,
+
+                $($(
+                    $(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">configure_field_meta</span>]</span>)<span class="op">*</span>
+                    <span class="macro-nonterminal">$</span><span class="macro-nonterminal">configure_field_vis</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">configure_field_name</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">configure_field_type</span>,
+                )<span class="kw-2">*</span>)<span class="op">*</span>
+        }
+
+        $(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">attributes_meta</span>]</span>)<span class="op">*</span>
+        <span class="kw">pub</span> <span class="kw">struct</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">attributes_name</span> {
                 <span class="doccomment">/// Defines if the surface has received at least one</span>
                 <span class="doccomment">/// xdg_surface.ack_configure from the client</span>
                 <span class="kw">pub</span> <span class="ident">configured</span>: <span class="ident">bool</span>,
-
                 <span class="doccomment">/// The serial of the last acked configure</span>
                 <span class="kw">pub</span> <span class="ident">configure_serial</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Serial</span><span class="op">&gt;</span>,
-
                 <span class="doccomment">/// Holds the state if the surface has sent the initial</span>
                 <span class="doccomment">/// configure event to the client. It is expected that</span>
                 <span class="doccomment">/// during the first commit a initial</span>
                 <span class="doccomment">/// configure event is sent to the client</span>
                 <span class="kw">pub</span> <span class="ident">initial_configure_sent</span>: <span class="ident">bool</span>,
-
                 <span class="doccomment">/// Holds the configures the server has sent out</span>
                 <span class="doccomment">/// to the client waiting to be acknowledged by</span>
                 <span class="doccomment">/// the client. All pending configures that are older</span>
                 <span class="doccomment">/// than the acknowledged one will be discarded during</span>
                 <span class="doccomment">/// processing xdg_surface.ack_configure.</span>
-                <span class="ident">pending_configures</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">configure</span><span class="op">&gt;</span>,
+                <span class="ident">pending_configures</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">configure_name</span><span class="op">&gt;</span>,
+                <span class="doccomment">/// Holds the pending state as set by the server.</span>
+                <span class="kw">pub</span> <span class="ident">server_pending</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">state</span><span class="op">&gt;</span>,
+                <span class="doccomment">/// Holds the last server_pending state that has been acknowledged</span>
+                <span class="doccomment">/// by the client. This state should be cloned to the current</span>
+                <span class="doccomment">/// during a commit.</span>
+                <span class="kw">pub</span> <span class="ident">last_acked</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">state</span><span class="op">&gt;</span>,
+                <span class="doccomment">/// Holds the current state after a successful commit.</span>
+                <span class="kw">pub</span> <span class="ident">current</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">state</span>,
 
                 $(
-                    $(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">field_attr</span>]</span>)<span class="op">*</span>
-                    <span class="macro-nonterminal">$</span><span class="macro-nonterminal">vis</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>: <span class="macro-nonterminal">$</span><span class="kw">type</span>,
+                    $(<span class="attribute">#[<span class="macro-nonterminal">$</span><span class="macro-nonterminal">attributes_field_meta</span>]</span>)<span class="op">*</span>
+                    <span class="macro-nonterminal">$</span><span class="macro-nonterminal">attributes_field_vis</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">attributes_field_name</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">attributes_field_type</span>,
                 )<span class="op">*</span>
         }
 
-        <span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">element</span> {
-            <span class="kw">fn</span> <span class="ident">ack_configure</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">serial</span>: <span class="ident">Serial</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Configure</span><span class="op">&gt;</span> {
+        <span class="kw">impl</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">attributes_name</span> {
+            <span class="kw">fn</span> <span class="ident">ack_configure</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">serial</span>: <span class="ident">Serial</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Configure</span><span class="op">&gt;</span> {
                 <span class="kw">let</span> <span class="ident">configure</span> <span class="op">=</span> <span class="kw">match</span> <span class="self">self</span>
                     .<span class="ident">pending_configures</span>
                     .<span class="ident">iter</span>()
@@ -1828,9 +1911,8 @@
                     }
                 };
 
-                <span class="comment">// Role specific ack_configure</span>
-                <span class="kw">let</span> <span class="ident">role_ack_configure</span>: <span class="kw-2">&amp;</span><span class="kw">dyn</span> <span class="ident">Fn</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">configure</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">role_ack_configure</span>;
-                <span class="ident">role_ack_configure</span>(<span class="self">self</span>, <span class="ident">configure</span>.<span class="ident">clone</span>());
+                <span class="comment">// Save the state as the last acked state</span>
+                <span class="self">self</span>.<span class="ident">last_acked</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">configure</span>.<span class="ident">state</span>.<span class="ident">clone</span>());
 
                 <span class="comment">// Set the xdg_surface to configured</span>
                 <span class="self">self</span>.<span class="ident">configured</span> <span class="op">=</span> <span class="bool-val">true</span>;
@@ -1843,18 +1925,63 @@
 
                 <span class="prelude-val">Some</span>(<span class="ident">configure</span>.<span class="ident">into</span>())
             }
+
+            <span class="doccomment">/// Gets the latest state that has been configured</span>
+            <span class="doccomment">/// on the server and sent to the client.</span>
+            <span class="doccomment">///</span>
+            <span class="doccomment">/// The state includes all changes that have been</span>
+            <span class="doccomment">/// made on the server, including all not yet</span>
+            <span class="doccomment">/// acked or committed changes, but excludes the</span>
+            <span class="doccomment">/// current [`server_pending`](#structfield.server_pending) state.</span>
+            <span class="doccomment">///</span>
+            <span class="doccomment">/// This can be used for example to check if the</span>
+            <span class="doccomment">/// [`server_pending`](#structfield.server_pending) state</span>
+            <span class="doccomment">/// is different from the last configured.</span>
+            <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">current_server_state</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">state</span> {
+                <span class="comment">// We check if there is already a non-acked pending</span>
+                <span class="comment">// configure and use its state or otherwise we could</span>
+                <span class="comment">// loose some state that was previously configured</span>
+                <span class="comment">// and sent, but not acked before calling with_pending_state</span>
+                <span class="comment">// again. If there is no pending state we try to use the</span>
+                <span class="comment">// last acked state which could contain state changes</span>
+                <span class="comment">// already acked but not committed to the current state.</span>
+                <span class="comment">// In case no last acked state is available, which is</span>
+                <span class="comment">// the case on the first configure we fallback to the</span>
+                <span class="comment">// current state.</span>
+                <span class="comment">// In both cases the state already contains all previous</span>
+                <span class="comment">// sent states. This way all pending state is accumulated</span>
+                <span class="comment">// into the current state.</span>
+                <span class="self">self</span>.<span class="ident">pending_configures</span>
+                    .<span class="ident">last</span>()
+                    .<span class="ident">map</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">c</span>.<span class="ident">state</span>)
+                    .<span class="ident">or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">last_acked</span>.<span class="ident">as_ref</span>())
+                    .<span class="ident">unwrap_or</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">current</span>)
+            }
+
+            <span class="doccomment">/// Check if the state has pending changes that have</span>
+            <span class="doccomment">/// not been sent to the client.</span>
+            <span class="doccomment">///</span>
+            <span class="doccomment">/// This differs from just checking if the [`server_pending`](#structfield.server_pending)</span>
+            <span class="doccomment">/// state is [`Some`] in that it also checks if a current pending</span>
+            <span class="doccomment">/// state is different from the [`current_server_state`](#method.current_server_state).</span>
+            <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">has_pending_changes</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
+                <span class="self">self</span>.<span class="ident">server_pending</span>.<span class="ident">as_ref</span>().<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">s</span> <span class="op">!</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">current_server_state</span>()).<span class="ident">unwrap_or</span>(<span class="bool-val">false</span>)
+            }
         }
 
-        <span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">element</span> {
+        <span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">attributes_name</span> {
             <span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
                 <span class="self">Self</span> {
                     <span class="ident">configured</span>: <span class="bool-val">false</span>,
                     <span class="ident">configure_serial</span>: <span class="prelude-val">None</span>,
                     <span class="ident">pending_configures</span>: <span class="ident">Vec::new</span>(),
                     <span class="ident">initial_configure_sent</span>: <span class="bool-val">false</span>,
+                    <span class="ident">server_pending</span>: <span class="prelude-val">None</span>,
+                    <span class="ident">last_acked</span>: <span class="prelude-val">None</span>,
+                    <span class="ident">current</span>: <span class="ident">Default::default</span>(),
 
                     $(
-                        <span class="macro-nonterminal">$</span><span class="macro-nonterminal">field</span>: <span class="ident">Default::default</span>(),
+                        <span class="macro-nonterminal">$</span><span class="macro-nonterminal">attributes_field_name</span>: <span class="ident">Default::default</span>(),
                     )<span class="op">*</span>
                 }
             }
@@ -1863,6 +1990,9 @@
 }
 
 <span class="macro">xdg_role!</span>(
+    <span class="ident">ToplevelState</span>,
+    <span class="doccomment">/// A configure message for toplevel surfaces</span>
+    <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
     <span class="ident">ToplevelConfigure</span>,
     <span class="doccomment">/// Role specific attributes for xdg_toplevel</span>
     <span class="doccomment">///</span>
@@ -1915,24 +2045,20 @@
         <span class="doccomment">/// Maximum size requested for this surface</span>
         <span class="doccomment">///</span>
         <span class="doccomment">/// A value of 0 on an axis means this axis is not constrained</span>
-        <span class="kw">pub</span> <span class="ident">max_size</span>: <span class="ident">Size</span><span class="op">&lt;</span><span class="ident">i32</span>, <span class="ident">Logical</span><span class="op">&gt;</span>,
-        <span class="doccomment">/// Holds the pending state as set by the server.</span>
-        <span class="kw">pub</span> <span class="ident">server_pending</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ToplevelState</span><span class="op">&gt;</span>,
-        <span class="doccomment">/// Holds the last server_pending state that has been acknowledged</span>
-        <span class="doccomment">/// by the client. This state should be cloned to the current</span>
-        <span class="doccomment">/// during a commit.</span>
-        <span class="kw">pub</span> <span class="ident">last_acked</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ToplevelState</span><span class="op">&gt;</span>,
-        <span class="doccomment">/// Holds the current state of the toplevel after a successful</span>
-        <span class="doccomment">/// commit.</span>
-        <span class="kw">pub</span> <span class="ident">current</span>: <span class="ident">ToplevelState</span>
-    },
-    <span class="op">|</span><span class="ident">attributes</span>, <span class="ident">configure</span><span class="op">|</span> {
-        <span class="ident">attributes</span>.<span class="ident">last_acked</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">configure</span>.<span class="ident">state</span>);
+        <span class="kw">pub</span> <span class="ident">max_size</span>: <span class="ident">Size</span><span class="op">&lt;</span><span class="ident">i32</span>, <span class="ident">Logical</span><span class="op">&gt;</span>
     }
 );
 
 <span class="macro">xdg_role!</span>(
-    <span class="ident">PopupConfigure</span>,
+    <span class="ident">PopupState</span>,
+    <span class="doccomment">/// A configure message for popup surface</span>
+    <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
+    <span class="ident">PopupConfigure</span> {
+        <span class="doccomment">/// The token the client provided in the `xdg_popup::reposition`</span>
+        <span class="doccomment">/// request. The token itself is opaque, and has no other special meaning.</span>
+        <span class="doccomment">/// The token is sent in the corresponding `xdg_popup::repositioned` event.</span>
+        <span class="kw">pub</span> <span class="ident">reposition_token</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>
+    },
     <span class="doccomment">/// Role specific attributes for xdg_popup</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// A popup surface is a short-lived, temporary surface. It can be used to</span>
@@ -1972,19 +2098,7 @@
         <span class="doccomment">/// It is a protocol error to call commit on a wl_surface with</span>
         <span class="doccomment">/// the xdg_popup role when no parent is set.</span>
         <span class="kw">pub</span> <span class="ident">parent</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">wl_surface::WlSurface</span><span class="op">&gt;</span>,
-        <span class="doccomment">/// Holds the last server_pending state that has been acknowledged</span>
-        <span class="doccomment">/// by the client. This state should be cloned to the current</span>
-        <span class="doccomment">/// during a commit.</span>
-        <span class="kw">pub</span> <span class="ident">last_acked</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PopupState</span><span class="op">&gt;</span>,
-        <span class="doccomment">/// Holds the current state of the popup after a successful</span>
-        <span class="doccomment">/// commit.</span>
-        <span class="kw">pub</span> <span class="ident">current</span>: <span class="ident">PopupState</span>,
-        <span class="doccomment">/// Holds the pending state as set by the server.</span>
-        <span class="kw">pub</span> <span class="ident">server_pending</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PopupState</span><span class="op">&gt;</span>,
         <span class="ident">popup_handle</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">xdg_popup::XdgPopup</span><span class="op">&gt;</span>
-    },
-    <span class="op">|</span><span class="ident">attributes</span>,<span class="ident">configure</span><span class="op">|</span> {
-        <span class="ident">attributes</span>.<span class="ident">last_acked</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">configure</span>.<span class="ident">state</span>);
     }
 );
 
@@ -2209,6 +2323,9 @@
 
     <span class="doccomment">/// The output for a fullscreen display</span>
     <span class="kw">pub</span> <span class="ident">fullscreen_output</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">wl_output::WlOutput</span><span class="op">&gt;</span>,
+
+    <span class="doccomment">/// The xdg decoration mode of the surface</span>
+    <span class="kw">pub</span> <span class="ident">decoration_mode</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">zxdg_toplevel_decoration_v1::Mode</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">ToplevelState</span> {
@@ -2217,6 +2334,7 @@
             <span class="ident">fullscreen_output</span>: <span class="prelude-val">None</span>,
             <span class="ident">states</span>: <span class="ident">Default::default</span>(),
             <span class="ident">size</span>: <span class="prelude-val">None</span>,
+            <span class="ident">decoration_mode</span>: <span class="prelude-val">None</span>,
         }
     }
 }
@@ -2227,6 +2345,7 @@
             <span class="ident">fullscreen_output</span>: <span class="self">self</span>.<span class="ident">fullscreen_output</span>.<span class="ident">clone</span>(),
             <span class="ident">states</span>: <span class="self">self</span>.<span class="ident">states</span>.<span class="ident">clone</span>(),
             <span class="ident">size</span>: <span class="self">self</span>.<span class="ident">size</span>,
+            <span class="ident">decoration_mode</span>: <span class="self">self</span>.<span class="ident">decoration_mode</span>,
         }
     }
 }
@@ -2253,7 +2372,7 @@
     <span class="doccomment">/// If the states did not have this state present, `true` is returned.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// If the states did have this state present, `false` is returned.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">state</span>: <span class="ident">xdg_toplevel::State</span>) -&gt; <span class="ident">bool</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">state</span>: <span class="ident">xdg_toplevel::State</span>) -&gt; <span class="ident">bool</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">contains</span>(<span class="ident">state</span>) {
             <span class="bool-val">false</span>
         } <span class="kw">else</span> {
@@ -2264,7 +2383,7 @@
 
     <span class="doccomment">/// Removes a state from the states. Returns whether the state was</span>
     <span class="doccomment">/// present in the states.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">unset</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">state</span>: <span class="ident">xdg_toplevel::State</span>) -&gt; <span class="ident">bool</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">unset</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">state</span>: <span class="ident">xdg_toplevel::State</span>) -&gt; <span class="ident">bool</span> {
         <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">contains</span>(<span class="ident">state</span>) {
             <span class="bool-val">false</span>
         } <span class="kw">else</span> {
@@ -2361,10 +2480,10 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Cacheable</span> <span class="kw">for</span> <span class="ident">SurfaceCachedState</span> {
-    <span class="kw">fn</span> <span class="ident">commit</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) -&gt; <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">commit</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="self">Self</span> {
         <span class="kw-2">*</span><span class="self">self</span>
     }
-    <span class="kw">fn</span> <span class="ident">merge_into</span>(<span class="self">self</span>, <span class="ident">into</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">Self</span>) {
+    <span class="kw">fn</span> <span class="ident">merge_into</span>(<span class="self">self</span>, <span class="ident">into</span>: <span class="kw-2">&amp;mut</span> <span class="self">Self</span>) {
         <span class="kw-2">*</span><span class="ident">into</span> <span class="op">=</span> <span class="self">self</span>;
     }
 }
@@ -2387,7 +2506,7 @@
 
 <span class="doccomment">/// Create a new `xdg_shell` global</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">xdg_shell_init</span><span class="op">&lt;</span><span class="ident">L</span>, <span class="ident">Impl</span><span class="op">&gt;</span>(
-    <span class="ident">display</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Display</span>,
+    <span class="ident">display</span>: <span class="kw-2">&amp;mut</span> <span class="ident">Display</span>,
     <span class="ident">implementation</span>: <span class="ident">Impl</span>,
     <span class="ident">logger</span>: <span class="ident">L</span>,
 ) -&gt; (<span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">Mutex</span><span class="op">&lt;</span><span class="ident">ShellState</span><span class="op">&gt;</span><span class="op">&gt;</span>, <span class="ident">Global</span><span class="op">&lt;</span><span class="ident">xdg_wm_base::XdgWmBase</span><span class="op">&gt;</span>)
@@ -2517,7 +2636,7 @@
     <span class="doccomment">/// Access the user data associated with this shell client</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_data</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="ident">F</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident"><span class="kw">crate</span>::utils::DeadResource</span><span class="op">&gt;</span>
     <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">UserDataMap</span>) -&gt; <span class="ident">T</span>,
+        <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;mut</span> <span class="ident">UserDataMap</span>) -&gt; <span class="ident">T</span>,
     {
         <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">alive</span>() {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident"><span class="kw">crate</span>::utils::DeadResource</span>);
@@ -2529,7 +2648,7 @@
             .<span class="ident">get</span>::<span class="op">&lt;</span><span class="ident"><span class="self">self</span>::xdg_handlers::ShellUserData</span><span class="op">&gt;</span>()
             .<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">guard</span> <span class="op">=</span> <span class="ident">data</span>.<span class="ident">client_data</span>.<span class="ident">lock</span>().<span class="ident">unwrap</span>();
-        <span class="prelude-val">Ok</span>(<span class="ident">f</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">guard</span>.<span class="ident">data</span>))
+        <span class="prelude-val">Ok</span>(<span class="ident">f</span>(<span class="kw-2">&amp;mut</span> <span class="ident">guard</span>.<span class="ident">data</span>))
     }
 }
 
@@ -2550,6 +2669,11 @@
     <span class="doccomment">/// Is the toplevel surface referred by this handle still alive?</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">alive</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
         <span class="self">self</span>.<span class="ident">shell_surface</span>.<span class="ident">as_ref</span>().<span class="ident">is_alive</span>() <span class="op">&amp;&amp;</span> <span class="self">self</span>.<span class="ident">wl_surface</span>.<span class="ident">as_ref</span>().<span class="ident">is_alive</span>()
+    }
+
+    <span class="doccomment">/// Supported XDG shell protocol version.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">version</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u32</span> {
+        <span class="self">self</span>.<span class="ident">shell_surface</span>.<span class="ident">as_ref</span>().<span class="ident">version</span>()
     }
 
     <span class="doccomment">/// Retrieve the shell client owning this toplevel surface</span>
@@ -2582,31 +2706,19 @@
     <span class="doccomment">/// Returns `None` if either no `server_pending` or the pending</span>
     <span class="doccomment">/// has already been sent to the client or the pending is equal</span>
     <span class="doccomment">/// to the `last_acked`</span>
-    <span class="kw">fn</span> <span class="ident">get_pending_state</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">attributes</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">XdgToplevelSurfaceRoleAttributes</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ToplevelState</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">get_pending_state</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">attributes</span>: <span class="kw-2">&amp;mut</span> <span class="ident">XdgToplevelSurfaceRoleAttributes</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">ToplevelState</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="op">!</span><span class="ident">attributes</span>.<span class="ident">initial_configure_sent</span> {
             <span class="kw">return</span> <span class="prelude-val">Some</span>(<span class="ident">attributes</span>.<span class="ident">server_pending</span>.<span class="ident">take</span>().<span class="ident">unwrap_or_default</span>());
         }
 
-        <span class="kw">let</span> <span class="ident">server_pending</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">attributes</span>.<span class="ident">server_pending</span>.<span class="ident">take</span>() {
-            <span class="prelude-val">Some</span>(<span class="ident">state</span>) =&gt; <span class="ident">state</span>,
-            <span class="prelude-val">None</span> =&gt; {
-                <span class="kw">return</span> <span class="prelude-val">None</span>;
-            }
-        };
-
-        <span class="kw">let</span> <span class="ident">last_state</span> <span class="op">=</span> <span class="ident">attributes</span>
-            .<span class="ident">pending_configures</span>
-            .<span class="ident">last</span>()
-            .<span class="ident">map</span>(<span class="op">|</span><span class="ident">c</span><span class="op">|</span> <span class="kw-2">&amp;</span><span class="ident">c</span>.<span class="ident">state</span>)
-            .<span class="ident">or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="ident">attributes</span>.<span class="ident">last_acked</span>.<span class="ident">as_ref</span>());
-
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">state</span>) <span class="op">=</span> <span class="ident">last_state</span> {
-            <span class="kw">if</span> <span class="ident">state</span> <span class="op">==</span> <span class="kw-2">&amp;</span><span class="ident">server_pending</span> {
-                <span class="kw">return</span> <span class="prelude-val">None</span>;
-            }
+        <span class="comment">// Check if the state really changed, it is possible</span>
+        <span class="comment">// that with_pending_state has been called without</span>
+        <span class="comment">// modifying the state.</span>
+        <span class="kw">if</span> <span class="op">!</span><span class="ident">attributes</span>.<span class="ident">has_pending_changes</span>() {
+            <span class="kw">return</span> <span class="prelude-val">None</span>;
         }
 
-        <span class="prelude-val">Some</span>(<span class="ident">server_pending</span>)
+        <span class="ident">attributes</span>.<span class="ident">server_pending</span>.<span class="ident">take</span>()
     }
 
     <span class="doccomment">/// Send a configure event to this toplevel surface to suggest it a new configuration</span>
@@ -2624,7 +2736,14 @@
                     .<span class="ident">unwrap</span>()
                     .<span class="ident">lock</span>()
                     .<span class="ident">unwrap</span>();
-                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">pending</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pending_state</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="kw-2">*</span><span class="ident">attributes</span>) {
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">pending</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_pending_state</span>(<span class="kw-2">&amp;mut</span> <span class="kw-2">*</span><span class="ident">attributes</span>) {
+                    <span class="comment">// Retrieve the last configured decoration mode and test</span>
+                    <span class="comment">// if the mode has changed.</span>
+                    <span class="comment">// We have to do this check before adding the pending state</span>
+                    <span class="comment">// to the pending configures.</span>
+                    <span class="kw">let</span> <span class="ident">decoration_mode_changed</span> <span class="op">=</span>
+                        <span class="ident">pending</span>.<span class="ident">decoration_mode</span> <span class="op">!</span><span class="op">=</span> <span class="ident">attributes</span>.<span class="ident">current_server_state</span>().<span class="ident">decoration_mode</span>;
+
                     <span class="kw">let</span> <span class="ident">configure</span> <span class="op">=</span> <span class="ident">ToplevelConfigure</span> {
                         <span class="ident">serial</span>: <span class="ident">SERIAL_COUNTER</span>.<span class="ident">next_serial</span>(),
                         <span class="ident">state</span>: <span class="ident">pending</span>,
@@ -2633,13 +2752,31 @@
                     <span class="ident">attributes</span>.<span class="ident">pending_configures</span>.<span class="ident">push</span>(<span class="ident">configure</span>.<span class="ident">clone</span>());
                     <span class="ident">attributes</span>.<span class="ident">initial_configure_sent</span> <span class="op">=</span> <span class="bool-val">true</span>;
 
-                    <span class="prelude-val">Some</span>(<span class="ident">configure</span>)
+                    <span class="prelude-val">Some</span>((<span class="ident">configure</span>, <span class="ident">decoration_mode_changed</span>))
                 } <span class="kw">else</span> {
                     <span class="prelude-val">None</span>
                 }
             })
             .<span class="ident">unwrap_or</span>(<span class="prelude-val">None</span>);
-            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">configure</span>) <span class="op">=</span> <span class="ident">configure</span> {
+            <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">configure</span>, <span class="ident">decoration_mode_changed</span>)) <span class="op">=</span> <span class="ident">configure</span> {
+                <span class="kw">if</span> <span class="ident">decoration_mode_changed</span> {
+                    <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">data</span>) <span class="op">=</span> <span class="self">self</span>
+                        .<span class="ident">shell_surface</span>
+                        .<span class="ident">as_ref</span>()
+                        .<span class="ident">user_data</span>()
+                        .<span class="ident">get</span>::<span class="op">&lt;</span><span class="ident">ShellSurfaceUserData</span><span class="op">&gt;</span>()
+                    {
+                        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">decoration</span>) <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">data</span>.<span class="ident">decoration</span>.<span class="ident">borrow</span>() {
+                            <span class="ident"><span class="self">self</span>::decoration::send_decoration_configure</span>(
+                                <span class="ident">decoration</span>,
+                                <span class="ident">configure</span>.<span class="ident">state</span>.<span class="ident">decoration_mode</span>.<span class="ident">unwrap_or</span>(
+                                    <span class="ident">xdg_decoration::v1::server::zxdg_toplevel_decoration_v1::Mode::ClientSide</span>,
+                                ),
+                            );
+                        }
+                    }
+                }
+
                 <span class="ident"><span class="self">self</span>::xdg_handlers::send_toplevel_configure</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">shell_surface</span>, <span class="ident">configure</span>)
             }
         }
@@ -2726,7 +2863,7 @@
     <span class="doccomment">/// The state will be sent to the client when calling [`send_configure`](#method.send_configure).</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_pending_state</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="ident">F</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">DeadResource</span><span class="op">&gt;</span>
     <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">ToplevelState</span>) -&gt; <span class="ident">T</span>,
+        <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;mut</span> <span class="ident">ToplevelState</span>) -&gt; <span class="ident">T</span>,
     {
         <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">alive</span>() {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">DeadResource</span>);
@@ -2740,7 +2877,7 @@
                 .<span class="ident">lock</span>()
                 .<span class="ident">unwrap</span>();
             <span class="kw">if</span> <span class="ident">attributes</span>.<span class="ident">server_pending</span>.<span class="ident">is_none</span>() {
-                <span class="ident">attributes</span>.<span class="ident">server_pending</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">attributes</span>.<span class="ident">current</span>.<span class="ident">clone</span>());
+                <span class="ident">attributes</span>.<span class="ident">server_pending</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">attributes</span>.<span class="ident">current_server_state</span>().<span class="ident">clone</span>());
             }
 
             <span class="kw">let</span> <span class="ident">server_pending</span> <span class="op">=</span> <span class="ident">attributes</span>.<span class="ident">server_pending</span>.<span class="ident">as_mut</span>().<span class="ident">unwrap</span>();
@@ -2893,10 +3030,13 @@
                     .<span class="ident">unwrap</span>();
 
                 <span class="kw">if</span> <span class="op">!</span><span class="ident">attributes</span>.<span class="ident">initial_configure_sent</span>
-                    <span class="op">|</span><span class="op">|</span> <span class="ident">attributes</span>.<span class="ident">server_pending</span>.<span class="ident">is_some</span>()
+                    <span class="op">|</span><span class="op">|</span> <span class="ident">attributes</span>.<span class="ident">has_pending_changes</span>()
                     <span class="op">|</span><span class="op">|</span> <span class="ident">reposition_token</span>.<span class="ident">is_some</span>()
                 {
-                    <span class="kw">let</span> <span class="ident">pending</span> <span class="op">=</span> <span class="ident">attributes</span>.<span class="ident">server_pending</span>.<span class="ident">take</span>().<span class="ident">unwrap_or</span>(<span class="ident">attributes</span>.<span class="ident">current</span>);
+                    <span class="kw">let</span> <span class="ident">pending</span> <span class="op">=</span> <span class="ident">attributes</span>
+                        .<span class="ident">server_pending</span>
+                        .<span class="ident">take</span>()
+                        .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">attributes</span>.<span class="ident">current_server_state</span>());
 
                     <span class="kw">let</span> <span class="ident">configure</span> <span class="op">=</span> <span class="ident">PopupConfigure</span> {
                         <span class="ident">state</span>: <span class="ident">pending</span>,
@@ -2966,7 +3106,7 @@
     <span class="doccomment">/// Send a configure event, including the `repositioned` event to the client</span>
     <span class="doccomment">/// in response to a `reposition` request.</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// For further information see [`XdgPopup::send_configure`]</span>
+    <span class="doccomment">/// For further information see [`send_configure`](#method.send_configure)</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">send_repositioned</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">token</span>: <span class="ident">u32</span>) {
         <span class="self">self</span>.<span class="ident">send_configure_internal</span>(<span class="prelude-val">Some</span>(<span class="ident">token</span>))
     }
@@ -3091,7 +3231,7 @@
     <span class="doccomment">/// The state will be sent to the client when calling [`send_configure`](#method.send_configure).</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">with_pending_state</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="ident">F</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">DeadResource</span><span class="op">&gt;</span>
     <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">PopupState</span>) -&gt; <span class="ident">T</span>,
+        <span class="ident">F</span>: <span class="ident">FnOnce</span>(<span class="kw-2">&amp;mut</span> <span class="ident">PopupState</span>) -&gt; <span class="ident">T</span>,
     {
         <span class="kw">if</span> <span class="op">!</span><span class="self">self</span>.<span class="ident">alive</span>() {
             <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">DeadResource</span>);
@@ -3105,7 +3245,7 @@
                 .<span class="ident">lock</span>()
                 .<span class="ident">unwrap</span>();
             <span class="kw">if</span> <span class="ident">attributes</span>.<span class="ident">server_pending</span>.<span class="ident">is_none</span>() {
-                <span class="ident">attributes</span>.<span class="ident">server_pending</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="ident">attributes</span>.<span class="ident">current</span>);
+                <span class="ident">attributes</span>.<span class="ident">server_pending</span> <span class="op">=</span> <span class="prelude-val">Some</span>(<span class="kw-2">*</span><span class="ident">attributes</span>.<span class="ident">current_server_state</span>());
             }
 
             <span class="kw">let</span> <span class="ident">server_pending</span> <span class="op">=</span> <span class="ident">attributes</span>.<span class="ident">server_pending</span>.<span class="ident">as_mut</span>().<span class="ident">unwrap</span>();
@@ -3113,37 +3253,6 @@
         })
         .<span class="ident">unwrap</span>())
     }
-}
-
-<span class="doccomment">/// A configure message for toplevel surfaces</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ToplevelConfigure</span> {
-    <span class="doccomment">/// The state associated with this configure</span>
-    <span class="kw">pub</span> <span class="ident">state</span>: <span class="ident">ToplevelState</span>,
-
-    <span class="doccomment">/// A serial number to track ACK from the client</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// This should be an ever increasing number, as the ACK-ing</span>
-    <span class="doccomment">/// from a client for a serial will validate all pending lower</span>
-    <span class="doccomment">/// serials.</span>
-    <span class="kw">pub</span> <span class="ident">serial</span>: <span class="ident">Serial</span>,
-}
-
-<span class="doccomment">/// A configure message for popup surface</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PopupConfigure</span> {
-    <span class="doccomment">/// The state associated with this configure,</span>
-    <span class="kw">pub</span> <span class="ident">state</span>: <span class="ident">PopupState</span>,
-    <span class="doccomment">/// A serial number to track ACK from the client</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// This should be an ever increasing number, as the ACK-ing</span>
-    <span class="doccomment">/// from a client for a serial will validate all pending lower</span>
-    <span class="doccomment">/// serials.</span>
-    <span class="kw">pub</span> <span class="ident">serial</span>: <span class="ident">Serial</span>,
-    <span class="doccomment">/// The token the client provided in the `xdg_popup::reposition`</span>
-    <span class="doccomment">/// request. The token itself is opaque, and has no other special meaning.</span>
-    <span class="doccomment">/// The token is sent in the corresponding `xdg_popup::repositioned` event.</span>
-    <span class="kw">pub</span> <span class="ident">reposition_token</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>,
 }
 
 <span class="doccomment">/// Defines the possible configure variants</span>
@@ -3319,6 +3428,5 @@
     },
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../../../" data-current-crate="smithay" data-search-index-js="../../../../../search-index.js" data-search-js="../../../../../search.js"></div>
-    <script src="../../../../../main.js"></script><script src="../../../../../source-script.js"></script><script src="../../../../../source-files.js"></script>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../../" data-current-crate="smithay" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.59.0-nightly (928783de6 2021-12-11)" ></div>
 </body></html>

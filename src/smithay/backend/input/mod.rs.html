@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src&#x2F;backend&#x2F;input&#x2F;mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../../storage.js"></script><script src="../../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../smithay/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src&#x2F;backend&#x2F;input&#x2F;mod.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../../../storage.js"></script><script src="../../../../crates.js"></script><script defer src="../../../../main.js"></script><script defer src="../../../../source-script.js"></script><script defer src="../../../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a class="sidebar-logo" href='../../../../smithay/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container rust-logo" href='../../../../smithay/index.html'><img src='../../../../rust-logo.png' alt='logo'></a><nav class="sub"><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -613,9 +614,46 @@
 <span id="613">613</span>
 <span id="614">614</span>
 <span id="615">615</span>
+<span id="616">616</span>
+<span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
+<span id="626">626</span>
+<span id="627">627</span>
+<span id="628">628</span>
+<span id="629">629</span>
+<span id="630">630</span>
+<span id="631">631</span>
+<span id="632">632</span>
+<span id="633">633</span>
+<span id="634">634</span>
+<span id="635">635</span>
+<span id="636">636</span>
+<span id="637">637</span>
+<span id="638">638</span>
+<span id="639">639</span>
+<span id="640">640</span>
+<span id="641">641</span>
+<span id="642">642</span>
+<span id="643">643</span>
+<span id="644">644</span>
+<span id="645">645</span>
+<span id="646">646</span>
+<span id="647">647</span>
+<span id="648">648</span>
+<span id="649">649</span>
+<span id="650">650</span>
+<span id="651">651</span>
+<span id="652">652</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Common traits for input backends to receive input from.</span>
 
-<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">error::Error</span>, <span class="ident">path::PathBuf</span>};
+<span class="kw">use</span> <span class="ident">std::path::PathBuf</span>;
 
 <span class="kw">mod</span> <span class="ident">tablet</span>;
 
@@ -692,7 +730,7 @@
 }
 
 <span class="doccomment">/// State of key on a keyboard. Either pressed or released</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Hash</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">KeyState</span> {
     <span class="doccomment">/// Key is released</span>
     <span class="ident">Released</span>,
@@ -702,10 +740,17 @@
 
 <span class="doccomment">/// Trait for keyboard event</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">KeyboardKeyEvent</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">InputBackend</span><span class="op">&gt;</span>: <span class="ident">Event</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
-    <span class="doccomment">/// Code of the pressed key. See `linux/input-event-codes.h`</span>
+    <span class="doccomment">/// Returns the numerical button code of the keyboard button.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The value will correspond to one `KEY_` constants from  the Linux [input event codes] inside</span>
+    <span class="doccomment">/// `input-event-codes.h`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// [input event codes]: https://gitlab.freedesktop.org/libinput/libinput/-/blob/main/include/linux/linux/input-event-codes.h</span>
     <span class="kw">fn</span> <span class="ident">key_code</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u32</span>;
+
     <span class="doccomment">/// State of the key</span>
     <span class="kw">fn</span> <span class="ident">state</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">KeyState</span>;
+
     <span class="doccomment">/// Total number of keys pressed on all devices on the associated [`Seat`](crate::wayland::seat::Seat)</span>
     <span class="kw">fn</span> <span class="ident">count</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u32</span>;
 }
@@ -725,7 +770,8 @@
 }
 
 <span class="doccomment">/// A particular mouse button</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
+<span class="attribute">#[<span class="ident">non_exhaustive</span>]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Hash</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">MouseButton</span> {
     <span class="doccomment">/// Left mouse button</span>
     <span class="ident">Left</span>,
@@ -733,12 +779,14 @@
     <span class="ident">Middle</span>,
     <span class="doccomment">/// Right mouse button</span>
     <span class="ident">Right</span>,
-    <span class="doccomment">/// Other mouse button with index</span>
-    <span class="ident">Other</span>(<span class="ident">u8</span>),
+    <span class="doccomment">/// Forward mouse button.</span>
+    <span class="ident">Forward</span>,
+    <span class="doccomment">/// Back mouse button.</span>
+    <span class="ident">Back</span>,
 }
 
 <span class="doccomment">/// State of a button on a pointer device, like mouse or tablet tool. Either pressed or released</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Hash</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">ButtonState</span> {
     <span class="doccomment">/// Button is released</span>
     <span class="ident">Released</span>,
@@ -748,14 +796,35 @@
 
 <span class="doccomment">/// Common methods pointer event generated by pressed buttons do implement</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">PointerButtonEvent</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">InputBackend</span><span class="op">&gt;</span>: <span class="ident">Event</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> {
-    <span class="doccomment">/// Pressed button of the event</span>
-    <span class="kw">fn</span> <span class="ident">button</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">MouseButton</span>;
+    <span class="doccomment">/// Pressed button of the event.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// This may return [`None`] if the button pressed in the event is not a standard mouse button. You may</span>
+    <span class="doccomment">/// obtain the button code using [`PointerButtonEvent::button_code`].</span>
+    <span class="kw">fn</span> <span class="ident">button</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">MouseButton</span><span class="op">&gt;</span> {
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">button_code</span>() {
+            <span class="number">0x110</span> =&gt; <span class="prelude-val">Some</span>(<span class="ident">MouseButton::Left</span>),
+            <span class="number">0x111</span> =&gt; <span class="prelude-val">Some</span>(<span class="ident">MouseButton::Right</span>),
+            <span class="number">0x112</span> =&gt; <span class="prelude-val">Some</span>(<span class="ident">MouseButton::Middle</span>),
+            <span class="number">0x115</span> =&gt; <span class="prelude-val">Some</span>(<span class="ident">MouseButton::Forward</span>),
+            <span class="number">0x116</span> =&gt; <span class="prelude-val">Some</span>(<span class="ident">MouseButton::Back</span>),
+            <span class="kw">_</span> =&gt; <span class="prelude-val">None</span>,
+        }
+    }
+
+    <span class="doccomment">/// Returns the numerical button code of the mouse button.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// The value will correspond to one `BTN_` constants from  the Linux [input event codes] inside</span>
+    <span class="doccomment">/// `input-event-codes.h`.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// [input event codes]: https://gitlab.freedesktop.org/libinput/libinput/-/blob/main/include/linux/linux/input-event-codes.h</span>
+    <span class="kw">fn</span> <span class="ident">button_code</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u32</span>;
+
     <span class="doccomment">/// State of the button</span>
     <span class="kw">fn</span> <span class="ident">state</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">ButtonState</span>;
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">B</span>: <span class="ident">InputBackend</span><span class="op">&gt;</span> <span class="ident">PointerButtonEvent</span><span class="op">&lt;</span><span class="ident">B</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">UnusedEvent</span> {
-    <span class="kw">fn</span> <span class="ident">button</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">MouseButton</span> {
+    <span class="kw">fn</span> <span class="ident">button_code</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">u32</span> {
         <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {}
     }
 
@@ -765,7 +834,7 @@
 }
 
 <span class="doccomment">/// Axis when scrolling</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Hash</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Axis</span> {
     <span class="doccomment">/// Vertical axis</span>
     <span class="ident">Vertical</span>,
@@ -1091,9 +1160,6 @@
 <span class="doccomment">/// need to implement this and provide the same base guarantees about the precision of</span>
 <span class="doccomment">/// given events.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">InputBackend</span>: <span class="ident">Sized</span> {
-    <span class="doccomment">/// Type representing errors that may be returned when processing events</span>
-    <span class="kw">type</span> <span class="ident">EventError</span>: <span class="ident">Error</span>;
-
     <span class="doccomment">/// Type representing input devices</span>
     <span class="kw">type</span> <span class="ident">Device</span>: <span class="ident">Device</span>;
     <span class="doccomment">/// Type representing keyboard events</span>
@@ -1127,11 +1193,6 @@
 
     <span class="doccomment">/// Special events that are custom to this backend</span>
     <span class="kw">type</span> <span class="ident">SpecialEvent</span>;
-
-    <span class="doccomment">/// Processes new events and calls the provided callback.</span>
-    <span class="kw">fn</span> <span class="ident">dispatch_new_events</span><span class="op">&lt;</span><span class="ident">F</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">callback</span>: <span class="ident">F</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident"><span class="self">Self</span>::EventError</span><span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="ident">InputEvent</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span>);
 }
 
 <span class="doccomment">/// Different events that can be generated by an input backend</span>
@@ -1228,7 +1289,20 @@
     <span class="doccomment">/// Special event specific of this backend</span>
     <span class="ident">Special</span>(<span class="ident">B::SpecialEvent</span>),
 }
+
+<span class="doccomment">/// Converts an xorg mouse button to the format used by libinput.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// Taken from https://sources.debian.org/src/xserver-xorg-input-libinput/1.1.0-1/src/xf86libinput.c/?hl=1508#L236-L252</span>
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;backend_winit&quot;</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;backend_x11&quot;</span>))]</span>
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">xorg_mouse_to_libinput</span>(<span class="ident">xorg</span>: <span class="ident">u32</span>) -&gt; <span class="ident">u32</span> {
+    <span class="kw">match</span> <span class="ident">xorg</span> {
+        <span class="number">0</span> =&gt; <span class="number">0</span>,
+        <span class="number">1</span> =&gt; <span class="number">0x110</span>,            <span class="comment">// BTN_LEFT</span>
+        <span class="number">2</span> =&gt; <span class="number">0x112</span>,            <span class="comment">// BTN_MIDDLE</span>
+        <span class="number">3</span> =&gt; <span class="number">0x111</span>,            <span class="comment">// BTN_RIGHT</span>
+        <span class="kw">_</span> =&gt; <span class="ident">xorg</span> <span class="op">-</span> <span class="number">8</span> <span class="op">+</span> <span class="number">0x113</span>, <span class="comment">// BTN_SIZE</span>
+    }
+}
 </code></pre></div>
-</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="smithay" data-search-index-js="../../../../search-index.js" data-search-js="../../../../search.js"></div>
-    <script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../../../" data-current-crate="smithay" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.59.0-nightly (928783de6 2021-12-11)" ></div>
 </body></html>
