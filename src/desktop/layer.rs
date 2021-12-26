@@ -1,6 +1,6 @@
 use crate::{
     backend::renderer::{Renderer, Texture, Frame, ImportAll, utils::draw_surface_tree},
-    desktop::{Space, PopupManager, utils::*},
+    desktop::{Space, PopupManager, utils::*, space::RenderElement},
     wayland::{
         compositor::{with_states},
         shell::wlr_layer::{LayerSurface as WlrLayerSurface, Layer as WlrLayer, LayerSurfaceCachedState, ExclusiveZone, Anchor, KeyboardInteractivity},
@@ -225,12 +225,12 @@ impl LayerMap {
 }
 
 #[derive(Debug, Default)]
-pub(super) struct LayerState {
-    location: Point<i32, Logical>,
+pub struct LayerState {
+    pub location: Point<i32, Logical>,
 }
 
 type LayerUserdata = RefCell<Option<LayerState>>;
-fn layer_state(layer: &LayerSurface) -> RefMut<'_, LayerState> {
+pub fn layer_state(layer: &LayerSurface) -> RefMut<'_, LayerState> {
     let userdata = layer.user_data();
     userdata.insert_if_missing(LayerUserdata::default);
     RefMut::map(userdata.get::<LayerUserdata>().unwrap().borrow_mut(), |opt| {
