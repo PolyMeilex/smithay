@@ -408,7 +408,7 @@ impl Space {
             <R as Renderer>::Error,
             <R as Renderer>::TextureId
         >>],
-    ) -> Result<bool, RenderError<R>>
+    ) -> Result<Option<Vec<Rectangle<i32, Logical>>>, RenderError<R>>
     where
         R: Renderer + ImportAll + 'static,
         R::TextureId: 'static,
@@ -510,7 +510,7 @@ impl Space {
         });
 
         if damage.is_empty() {
-            return Ok(false);
+            return Ok(None);
         }
 
         let output_transform: Transform = output.current_transform().into();
@@ -578,9 +578,9 @@ impl Space {
                 (ToplevelId::from(elem), geo)
             })
             .collect();
-        state.old_damage.push_front(new_damage);
+        state.old_damage.push_front(new_damage.clone());
 
-        Ok(true)
+        Ok(Some(new_damage))
     }
 
     pub fn send_frames(&self, all: bool, time: u32) {
