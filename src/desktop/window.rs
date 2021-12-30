@@ -250,7 +250,7 @@ impl Window {
     }
 
     /// Damage of all the surfaces of this window
-    pub(super) fn accumulated_damage(&self, for_values: Option<(&Space, &Output)>) -> Vec<Rectangle<i32, Logical>> {
+    pub fn accumulated_damage(&self, for_values: Option<(&Space, &Output)>) -> Vec<Rectangle<i32, Logical>> {
         let mut damage = Vec::new();
         if let Some(surface) = self.0.toplevel.get_surface() {
             damage.extend(damage_from_surface_tree(surface, (0, 0), for_values).into_iter().flat_map(|rect| rect.intersection(self.bbox())));
