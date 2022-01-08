@@ -141,12 +141,13 @@ impl LayerMap {
         cx: &mut DisplayHandle<'_>,
         layer: WlrLayer,
     ) -> impl DoubleEndedIterator<Item = &LayerSurface> {
-        // self.layers
-        //     .iter()
-        //     .filter(move |l| l.layer(cx).map(|l| l == layer).unwrap_or(false))
+        let vec: Vec<_> = self
+            .layers
+            .iter()
+            .filter(move |l| l.layer(cx).map(|l| l == layer).unwrap_or(false))
+            .collect();
 
-        todo!();
-        Box::new(std::iter::empty())
+        vec.into_iter()
     }
 
     /// Returns the [`LayerSurface`] matching a given [`WlSurface`], if any.
@@ -426,7 +427,7 @@ impl LayerSurface {
     pub fn bbox_with_popups(&self, cx: &mut DisplayHandle<'_>) -> Rectangle<i32, Logical> {
         let mut bounding_box = self.bbox(cx);
         if let Some(surface) = self.0.surface.get_surface(cx) {
-            for (popup, location) in PopupManager::popups_for_surface(surface)
+            for (popup, location) in PopupManager::popups_for_surface(cx, surface)
                 .ok()
                 .into_iter()
                 .flatten()
@@ -450,7 +451,7 @@ impl LayerSurface {
     ) -> Option<(WlSurface, Point<i32, Logical>)> {
         let point = point.into();
         if let Some(surface) = self.get_surface(cx) {
-            for (popup, location) in PopupManager::popups_for_surface(surface)
+            for (popup, location) in PopupManager::popups_for_surface(cx, surface)
                 .ok()
                 .into_iter()
                 .flatten()
@@ -486,7 +487,7 @@ impl LayerSurface {
                     .into_iter()
                     .flat_map(|rect| rect.intersection(self.bbox(cx))),
             );
-            for (popup, location) in PopupManager::popups_for_surface(surface)
+            for (popup, location) in PopupManager::popups_for_surface(cx, surface)
                 .ok()
                 .into_iter()
                 .flatten()
@@ -544,7 +545,7 @@ where
     let location = location.into();
     if let Some(surface) = layer.get_surface(cx) {
         draw_surface_tree(renderer, frame, surface, scale, location, damage, log)?;
-        for (popup, p_location) in PopupManager::popups_for_surface(surface)
+        for (popup, p_location) in PopupManager::popups_for_surface(cx, surface)
             .ok()
             .into_iter()
             .flatten()

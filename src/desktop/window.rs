@@ -146,7 +146,7 @@ impl Window {
     pub fn bbox_with_popups(&self, cx: &mut DisplayHandle<'_>) -> Rectangle<i32, Logical> {
         let mut bounding_box = self.bbox(cx);
         if let Some(surface) = self.0.toplevel.get_surface(cx) {
-            for (popup, location) in PopupManager::popups_for_surface(surface)
+            for (popup, location) in PopupManager::popups_for_surface(cx, surface)
                 .ok()
                 .into_iter()
                 .flatten()
@@ -191,7 +191,7 @@ impl Window {
     pub fn send_frame(&self, cx: &mut DisplayHandle<'_>, time: u32) {
         if let Some(surface) = self.0.toplevel.get_surface(cx) {
             send_frames_surface_tree(cx, surface, time);
-            for (popup, _) in PopupManager::popups_for_surface(surface)
+            for (popup, _) in PopupManager::popups_for_surface(cx, surface)
                 .ok()
                 .into_iter()
                 .flatten()
@@ -224,7 +224,7 @@ impl Window {
     ) -> Option<(wl_surface::WlSurface, Point<i32, Logical>)> {
         let point = point.into();
         if let Some(surface) = self.0.toplevel.get_surface(cx) {
-            for (popup, location) in PopupManager::popups_for_surface(surface)
+            for (popup, location) in PopupManager::popups_for_surface(cx, surface)
                 .ok()
                 .into_iter()
                 .flatten()
@@ -261,7 +261,7 @@ impl Window {
                     .into_iter()
                     .flat_map(|rect| rect.intersection(self.bbox(cx))),
             );
-            for (popup, location) in PopupManager::popups_for_surface(surface)
+            for (popup, location) in PopupManager::popups_for_surface(cx, surface)
                 .ok()
                 .into_iter()
                 .flatten()
@@ -317,7 +317,7 @@ where
     let location = location.into();
     if let Some(surface) = window.toplevel().get_surface(cx) {
         draw_surface_tree(renderer, frame, surface, scale, location, damage, log)?;
-        for (popup, p_location) in PopupManager::popups_for_surface(surface)
+        for (popup, p_location) in PopupManager::popups_for_surface(cx, surface)
             .ok()
             .into_iter()
             .flatten()

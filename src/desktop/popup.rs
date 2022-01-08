@@ -93,10 +93,14 @@ impl PopupManager {
             .find(|p| p.get_surface(cx) == Some(surface))
             .cloned()
             .or_else(|| {
-                self.popup_trees
+                let vec: Vec<_> = self
+                    .popup_trees
                     .iter()
-                    .map(|tree| tree.iter_popups())
+                    .map(|tree| tree.iter_popups(cx))
                     .flatten()
+                    .collect();
+
+                vec.into_iter()
                     .find(|(p, _)| p.get_surface(cx) == Some(surface))
                     .map(|(p, _)| p)
             })
@@ -104,13 +108,14 @@ impl PopupManager {
 
     /// Returns the popups and their relative positions for a given toplevel surface, if any.
     pub fn popups_for_surface(
+        cx: &mut DisplayHandle<'_>,
         surface: &WlSurface,
     ) -> Result<impl Iterator<Item = (PopupKind, Point<i32, Logical>)>, DeadResource> {
         with_states(surface, |states| {
             states
                 .data_map
                 .get::<PopupTree>()
-                .map(|x| x.iter_popups())
+                .map(|x| x.iter_popups(cx))
                 .into_iter()
                 .flatten()
         })
@@ -136,18 +141,21 @@ struct PopupNode {
 }
 
 impl PopupTree {
-    fn iter_popups(&self) -> impl Iterator<Item = (PopupKind, Point<i32, Logical>)> {
-        // self.0
-        //     .lock()
-        //     .unwrap()
-        //     .iter()
-        //     .map(|n| n.iter_popups_relative_to((0, 0)).map(|(p, l)| (p.clone(), l)))
-        //     .flatten()
-        //     .collect::<Vec<_>>()
-        //     .into_iter()
-
-        todo!();
-        Box::new(std::iter::empty())
+    fn iter_popups(
+        &self,
+        cx: &mut DisplayHandle<'_>,
+    ) -> impl Iterator<Item = (PopupKind, Point<i32, Logical>)> {
+        self.0
+            .lock()
+            .unwrap()
+            .iter()
+            .map(|n| {
+                let vec: Vec<_> = n.iter_popups_relative_to(cx, (0, 0)).collect();
+                vec.into_iter()
+            })
+            .flatten()
+            .collect::<Vec<_>>()
+            .into_iter()
     }
 
     fn insert(&self, cx: &mut DisplayHandle<'_>, popup: PopupKind) {
@@ -173,6 +181,54 @@ impl PopupTree {
     }
 }
 
+type IterItem = (PopupKind, Point<i32, Logical>);
+
+struct PopupRelativeToIter<'a, 'b> {
+    cx: Option<&'a mut DisplayHandle<'b>>,
+    relative_to: Point<i32, Logical>,
+
+    root: std::iter::Once<IterItem>,
+    children: std::slice::Iter<'a, PopupNode>,
+
+    recursive: Option<Box<PopupRelativeToIter<'a, 'b>>>,
+}
+
+impl<'a, 'b> Iterator for PopupRelativeToIter<'a, 'b> {
+    type Item = IterItem;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if let Some(i) = self.root.next() {
+            return Some(i);
+        }
+
+        if let Some(recursive) = self.recursive.as_mut() {
+            if let Some(i) = recursive.next() {
+                return Some(i);
+            } else {
+                self.cx = recursive.cx.take();
+            }
+        }
+
+        if let Some(ch) = self.children.next() {
+            let cx = self.cx.take().unwrap();
+            let relative_to = self.relative_to + ch.surface.location(cx);
+            let mut resursive = PopupRelativeToIter {
+                cx: Some(cx),
+                relative_to,
+                root: std::iter::once((ch.surface.clone(), relative_to)),
+                children: ch.children.iter(),
+
+                recursive: None,
+            };
+            let ret = resursive.next();
+            self.recursive = Some(Box::new(resursive));
+            ret
+        } else {
+            None
+        }
+    }
+}
+
 impl PopupNode {
     fn new(surface: PopupKind) -> Self {
         PopupNode {
@@ -181,23 +237,20 @@ impl PopupNode {
         }
     }
 
-    fn iter_popups_relative_to<P: Into<Point<i32, Logical>>>(
-        &self,
-        cx: &mut DisplayHandle<'_>,
+    fn iter_popups_relative_to<'a, 'b, P: Into<Point<i32, Logical>>>(
+        &'a self,
+        cx: &'a mut DisplayHandle<'b>,
         loc: P,
-    ) -> impl Iterator<Item = (&PopupKind, Point<i32, Logical>)> {
-        todo!();
-        // let relative_to = loc.into() + self.surface.location(cx);
-        // std::iter::once((&self.surface, relative_to)).chain(
-        //     self.children
-        //         .iter()
-        //         .map(move |x| {
-        //             Box::new(x.iter_popups_relative_to(cx, relative_to))
-        //                 as Box<dyn Iterator<Item = (&PopupKind, Point<i32, Logical>)>>
-        //         })
-        //         .flatten(),
-        // )
-        Box::new(std::iter::empty())
+    ) -> PopupRelativeToIter<'a, 'b> {
+        let relative_to = loc.into() + self.surface.location(cx);
+
+        PopupRelativeToIter {
+            cx: Some(cx),
+            relative_to,
+            root: std::iter::once((self.surface.clone(), relative_to)),
+            children: self.children.iter(),
+            recursive: None,
+        }
     }
 
     fn insert(&mut self, cx: &mut DisplayHandle<'_>, popup: PopupKind) -> bool {
