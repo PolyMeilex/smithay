@@ -83,3 +83,6 @@ test_all_features = ["default"]
 [[example]]
 name = "raw_drm"
 required-features = ["backend_drm"]
+
+[[example]]
+name = "smallvil"
