@@ -176,7 +176,7 @@ impl Space {
         }
         self.outputs.iter().find_map(|o| {
             let map = layer_map_for_output(o);
-            map.layer_for_surface(cx,surface).cloned()
+            map.layer_for_surface(cx, surface).cloned()
         })
     }
 
@@ -437,11 +437,11 @@ impl Space {
     /// Should be called on commit to let the space automatically call [`Window::refresh`]
     /// for the window that belongs to the given surface, if managed by this space.
     pub fn commit(&self, cx: &mut DisplayHandle<'_>, surface: &WlSurface) {
-        if is_sync_subsurface(cx, surface) {
+        if is_sync_subsurface(surface) {
             return;
         }
         let mut root = surface.clone();
-        while let Some(parent) = get_parent(cx, &root) {
+        while let Some(parent) = get_parent(&root) {
             root = parent;
         }
         if let Some(window) = self
@@ -612,14 +612,14 @@ impl Space {
                 // Then re-draw all windows & layers overlapping with a damage rect.
 
                 for element in layer_map
-                    .layers_on(cx,WlrLayer::Background)
-                    .chain(layer_map.layers_on(cx,WlrLayer::Bottom))
+                    .layers_on(WlrLayer::Background)
+                    .chain(layer_map.layers_on(WlrLayer::Bottom))
                     .map(|l| l as &SpaceElem<R>)
                     .chain(self.windows.iter().map(|w| w as &SpaceElem<R>))
                     .chain(
                         layer_map
-                            .layers_on(cx,WlrLayer::Top)
-                            .chain(layer_map.layers_on(cx, WlrLayer::Overlay))
+                            .layers_on(WlrLayer::Top)
+                            .chain(layer_map.layers_on(WlrLayer::Overlay))
                             .map(|l| l as &SpaceElem<R>),
                     )
                     .chain(custom_elements.iter().map(|c| c as &SpaceElem<R>))

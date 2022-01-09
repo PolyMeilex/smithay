@@ -297,6 +297,7 @@ impl Window {
 /// Note: This function will render nothing, if you are not using
 /// [`crate::backend::renderer::utils::on_commit_buffer_handler`]
 /// to let smithay handle buffer management.
+#[allow(clippy::too_many_arguments)]
 pub fn draw_window<R, E, F, T, P>(
     cx: &mut DisplayHandle<'_>,
     renderer: &mut R,

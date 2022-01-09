@@ -39,7 +39,7 @@ impl PopupManager {
 
     /// Needs to be called for [`PopupManager`] to correctly update its internal state.
     pub fn commit(&mut self, cx: &mut DisplayHandle<'_>, surface: &WlSurface) {
-        if get_role(cx, surface) == Some(XDG_POPUP_ROLE) {
+        if get_role(surface) == Some(XDG_POPUP_ROLE) {
             if let Some(i) = self
                 .unmapped_popups
                 .iter()
@@ -56,7 +56,7 @@ impl PopupManager {
 
     fn add_popup(&mut self, cx: &mut DisplayHandle<'_>, popup: PopupKind) -> Result<(), DeadResource> {
         let mut parent = popup.parent(cx).unwrap();
-        while get_role(cx, &parent) == Some(XDG_POPUP_ROLE) {
+        while get_role(&parent) == Some(XDG_POPUP_ROLE) {
             parent = with_states(&parent, |states| {
                 states
                     .data_map
@@ -93,6 +93,7 @@ impl PopupManager {
             .find(|p| p.get_surface(cx) == Some(surface))
             .cloned()
             .or_else(|| {
+                #[allow(clippy::needless_collect)]
                 let vec: Vec<_> = self
                     .popup_trees
                     .iter()
@@ -150,6 +151,7 @@ impl PopupTree {
             .unwrap()
             .iter()
             .map(|n| {
+                #[allow(clippy::needless_collect)]
                 let vec: Vec<_> = n.iter_popups_relative_to(cx, (0, 0)).collect();
                 vec.into_iter()
             })
