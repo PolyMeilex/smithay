@@ -12,7 +12,7 @@ use crate::{
         output::Output,
     },
 };
-use wayland_server::protocol::wl_surface;
+use wayland_server::{protocol::wl_surface, DisplayHandle};
 
 use std::cell::RefCell;
 
@@ -213,7 +213,7 @@ where
 }
 
 /// Sends frame callbacks for a surface and its subsurfaces with the given `time`.
-pub fn send_frames_surface_tree(surface: &wl_surface::WlSurface, time: u32) {
+pub fn send_frames_surface_tree(cx: &mut DisplayHandle<'_>, surface: &wl_surface::WlSurface, time: u32) {
     with_surface_tree_downward(
         surface,
         (),
@@ -227,7 +227,7 @@ pub fn send_frames_surface_tree(surface: &wl_surface::WlSurface, time: u32) {
                 .frame_callbacks
                 .drain(..)
             {
-                callback.done(time);
+                callback.done(cx, time);
             }
         },
         |_, _, &()| true,

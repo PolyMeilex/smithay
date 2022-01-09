@@ -6,7 +6,7 @@ use crate::{
     },
 };
 use std::sync::{Arc, Mutex};
-use wayland_server::protocol::wl_surface::WlSurface;
+use wayland_server::{protocol::wl_surface::WlSurface, DisplayHandle};
 
 /// Helper to track popups.
 #[derive(Debug)]
@@ -27,9 +27,9 @@ impl PopupManager {
     }
 
     /// Start tracking a new popup.
-    pub fn track_popup(&mut self, kind: PopupKind) -> Result<(), DeadResource> {
-        if kind.parent().is_some() {
-            self.add_popup(kind)
+    pub fn track_popup(&mut self, cx: &mut DisplayHandle<'_>, kind: PopupKind) -> Result<(), DeadResource> {
+        if kind.parent(cx).is_some() {
+            self.add_popup(cx, kind)
         } else {
             slog::trace!(self.logger, "Adding unmapped popups: {:?}", kind);
             self.unmapped_popups.push(kind);
@@ -38,25 +38,25 @@ impl PopupManager {
     }
 
     /// Needs to be called for [`PopupManager`] to correctly update its internal state.
-    pub fn commit(&mut self, surface: &WlSurface) {
-        if get_role(surface) == Some(XDG_POPUP_ROLE) {
+    pub fn commit(&mut self, cx: &mut DisplayHandle<'_>, surface: &WlSurface) {
+        if get_role(cx, surface) == Some(XDG_POPUP_ROLE) {
             if let Some(i) = self
                 .unmapped_popups
                 .iter()
-                .position(|p| p.get_surface() == Some(surface))
+                .position(|p| p.get_surface(cx) == Some(surface))
             {
                 slog::trace!(self.logger, "Popup got mapped");
                 let popup = self.unmapped_popups.swap_remove(i);
                 // at this point the popup must have a parent,
                 // or it would have raised a protocol error
-                let _ = self.add_popup(popup);
+                let _ = self.add_popup(cx, popup);
             }
         }
     }
 
-    fn add_popup(&mut self, popup: PopupKind) -> Result<(), DeadResource> {
-        let mut parent = popup.parent().unwrap();
-        while get_role(&parent) == Some(XDG_POPUP_ROLE) {
+    fn add_popup(&mut self, cx: &mut DisplayHandle<'_>, popup: PopupKind) -> Result<(), DeadResource> {
+        let mut parent = popup.parent(cx).unwrap();
+        while get_role(cx, &parent) == Some(XDG_POPUP_ROLE) {
             parent = with_states(&parent, |states| {
                 states
                     .data_map
@@ -82,22 +82,22 @@ impl PopupManager {
                 self.popup_trees.push(tree.clone());
             }
             slog::trace!(self.logger, "Adding popup {:?} to parent {:?}", popup, parent);
-            tree.insert(popup);
+            tree.insert(cx, popup);
         })
     }
 
     /// Finds the popup belonging to a given [`WlSurface`], if any.
-    pub fn find_popup(&self, surface: &WlSurface) -> Option<PopupKind> {
+    pub fn find_popup(&self, cx: &mut DisplayHandle<'_>, surface: &WlSurface) -> Option<PopupKind> {
         self.unmapped_popups
             .iter()
-            .find(|p| p.get_surface() == Some(surface))
+            .find(|p| p.get_surface(cx) == Some(surface))
             .cloned()
             .or_else(|| {
                 self.popup_trees
                     .iter()
                     .map(|tree| tree.iter_popups())
                     .flatten()
-                    .find(|(p, _)| p.get_surface() == Some(surface))
+                    .find(|(p, _)| p.get_surface(cx) == Some(surface))
                     .map(|(p, _)| p)
             })
     }
@@ -118,11 +118,11 @@ impl PopupManager {
 
     /// Needs to be called periodically (but not necessarily frequently)
     /// to cleanup internal resources.
-    pub fn cleanup(&mut self) {
+    pub fn cleanup(&mut self, cx: &mut DisplayHandle<'_>) {
         // retain_mut is sadly still unstable
-        self.popup_trees.iter_mut().for_each(|tree| tree.cleanup());
+        self.popup_trees.iter_mut().for_each(|tree| tree.cleanup(cx));
         self.popup_trees.retain(|tree| tree.alive());
-        self.unmapped_popups.retain(|surf| surf.alive());
+        self.unmapped_popups.retain(|surf| surf.alive(cx));
     }
 }
 
@@ -137,32 +137,35 @@ struct PopupNode {
 
 impl PopupTree {
     fn iter_popups(&self) -> impl Iterator<Item = (PopupKind, Point<i32, Logical>)> {
-        self.0
-            .lock()
-            .unwrap()
-            .iter()
-            .map(|n| n.iter_popups_relative_to((0, 0)).map(|(p, l)| (p.clone(), l)))
-            .flatten()
-            .collect::<Vec<_>>()
-            .into_iter()
+        // self.0
+        //     .lock()
+        //     .unwrap()
+        //     .iter()
+        //     .map(|n| n.iter_popups_relative_to((0, 0)).map(|(p, l)| (p.clone(), l)))
+        //     .flatten()
+        //     .collect::<Vec<_>>()
+        //     .into_iter()
+
+        todo!();
+        Box::new(std::iter::empty())
     }
 
-    fn insert(&self, popup: PopupKind) {
+    fn insert(&self, cx: &mut DisplayHandle<'_>, popup: PopupKind) {
         let children = &mut *self.0.lock().unwrap();
         for child in children.iter_mut() {
-            if child.insert(popup.clone()) {
+            if child.insert(cx, popup.clone()) {
                 return;
             }
         }
         children.push(PopupNode::new(popup));
     }
 
-    fn cleanup(&mut self) {
+    fn cleanup(&mut self, cx: &mut DisplayHandle<'_>) {
         let mut children = self.0.lock().unwrap();
         for child in children.iter_mut() {
-            child.cleanup();
+            child.cleanup(cx);
         }
-        children.retain(|n| n.surface.alive());
+        children.retain(|n| n.surface.alive(cx));
     }
 
     fn alive(&self) -> bool {
@@ -180,28 +183,31 @@ impl PopupNode {
 
     fn iter_popups_relative_to<P: Into<Point<i32, Logical>>>(
         &self,
+        cx: &mut DisplayHandle<'_>,
         loc: P,
     ) -> impl Iterator<Item = (&PopupKind, Point<i32, Logical>)> {
-        let relative_to = loc.into() + self.surface.location();
-        std::iter::once((&self.surface, relative_to)).chain(
-            self.children
-                .iter()
-                .map(move |x| {
-                    Box::new(x.iter_popups_relative_to(relative_to))
-                        as Box<dyn Iterator<Item = (&PopupKind, Point<i32, Logical>)>>
-                })
-                .flatten(),
-        )
+        todo!();
+        // let relative_to = loc.into() + self.surface.location(cx);
+        // std::iter::once((&self.surface, relative_to)).chain(
+        //     self.children
+        //         .iter()
+        //         .map(move |x| {
+        //             Box::new(x.iter_popups_relative_to(cx, relative_to))
+        //                 as Box<dyn Iterator<Item = (&PopupKind, Point<i32, Logical>)>>
+        //         })
+        //         .flatten(),
+        // )
+        Box::new(std::iter::empty())
     }
 
-    fn insert(&mut self, popup: PopupKind) -> bool {
-        let parent = popup.parent().unwrap();
-        if self.surface.get_surface() == Some(&parent) {
+    fn insert(&mut self, cx: &mut DisplayHandle<'_>, popup: PopupKind) -> bool {
+        let parent = popup.parent(cx).unwrap();
+        if self.surface.get_surface(cx) == Some(&parent) {
             self.children.push(PopupNode::new(popup));
             true
         } else {
             for child in &mut self.children {
-                if child.insert(popup.clone()) {
+                if child.insert(cx, popup.clone()) {
                     return true;
                 }
             }
@@ -209,11 +215,11 @@ impl PopupNode {
         }
     }
 
-    fn cleanup(&mut self) {
+    fn cleanup(&mut self, cx: &mut DisplayHandle<'_>) {
         for child in &mut self.children {
-            child.cleanup();
+            child.cleanup(cx);
         }
-        self.children.retain(|n| n.surface.alive());
+        self.children.retain(|n| n.surface.alive(cx));
     }
 }
 
@@ -225,28 +231,28 @@ pub enum PopupKind {
 }
 
 impl PopupKind {
-    fn alive(&self) -> bool {
+    fn alive(&self, cx: &mut DisplayHandle<'_>) -> bool {
         match *self {
-            PopupKind::Xdg(ref t) => t.alive(),
+            PopupKind::Xdg(ref t) => t.alive(cx),
         }
     }
 
     /// Retrieves the underlying [`WlSurface`]
-    pub fn get_surface(&self) -> Option<&WlSurface> {
+    pub fn get_surface(&self, cx: &mut DisplayHandle<'_>) -> Option<&WlSurface> {
         match *self {
-            PopupKind::Xdg(ref t) => t.get_surface(),
+            PopupKind::Xdg(ref t) => t.get_surface(cx),
         }
     }
 
-    fn parent(&self) -> Option<WlSurface> {
+    fn parent(&self, cx: &mut DisplayHandle<'_>) -> Option<WlSurface> {
         match *self {
-            PopupKind::Xdg(ref t) => t.get_parent_surface(),
+            PopupKind::Xdg(ref t) => t.get_parent_surface(cx),
         }
     }
 
     /// Returns the surface geometry as set by the client using `xdg_surface::set_window_geometry`
-    pub fn geometry(&self) -> Rectangle<i32, Logical> {
-        let wl_surface = match self.get_surface() {
+    pub fn geometry(&self, cx: &mut DisplayHandle<'_>) -> Rectangle<i32, Logical> {
+        let wl_surface = match self.get_surface(cx) {
             Some(s) => s,
             None => return Rectangle::from_loc_and_size((0, 0), (0, 0)),
         };
@@ -261,8 +267,8 @@ impl PopupKind {
         .unwrap()
     }
 
-    fn location(&self) -> Point<i32, Logical> {
-        let wl_surface = match self.get_surface() {
+    fn location(&self, cx: &mut DisplayHandle<'_>) -> Point<i32, Logical> {
+        let wl_surface = match self.get_surface(cx) {
             Some(s) => s,
             None => return (0, 0).into(),
         };

@@ -19,7 +19,7 @@ use crate::{
 };
 use indexmap::{IndexMap, IndexSet};
 use std::{cell::RefCell, collections::VecDeque, fmt};
-use wayland_server::protocol::wl_surface::WlSurface;
+use wayland_server::{protocol::wl_surface::WlSurface, DisplayHandle, Resource};
 
 mod element;
 mod layer;
@@ -81,8 +81,14 @@ impl Space {
     /// If activate is true it will set the new windows state
     /// to be activate and removes that state from every
     /// other mapped window.
-    pub fn map_window<P: Into<Point<i32, Logical>>>(&mut self, window: &Window, location: P, activate: bool) {
-        self.insert_window(window, activate);
+    pub fn map_window<P: Into<Point<i32, Logical>>>(
+        &mut self,
+        cx: &mut DisplayHandle<'_>,
+        window: &Window,
+        location: P,
+        activate: bool,
+    ) {
+        self.insert_window(cx, window, activate);
         window_state(self.id, window).location = location.into();
     }
 
@@ -93,20 +99,20 @@ impl Space {
     /// If activate is true it will set the new windows state
     /// to be activate and removes that state from every
     /// other mapped window.
-    pub fn raise_window(&mut self, window: &Window, activate: bool) {
+    pub fn raise_window(&mut self, cx: &mut DisplayHandle<'_>, window: &Window, activate: bool) {
         if self.windows.shift_remove(window) {
-            self.insert_window(window, activate);
+            self.insert_window(cx, window, activate);
         }
     }
 
-    fn insert_window(&mut self, window: &Window, activate: bool) {
+    fn insert_window(&mut self, cx: &mut DisplayHandle<'_>, window: &Window, activate: bool) {
         self.windows.insert(window.clone());
 
         if activate {
-            window.set_activated(true);
+            window.set_activated(cx, true);
             for w in self.windows.iter() {
                 if w != window {
-                    w.set_activated(false);
+                    w.set_activated(cx, false);
                 }
             }
         }
@@ -128,10 +134,14 @@ impl Space {
     }
 
     /// Get a reference to the window under a given point, if any
-    pub fn window_under<P: Into<Point<f64, Logical>>>(&self, point: P) -> Option<&Window> {
+    pub fn window_under<P: Into<Point<f64, Logical>>>(
+        &self,
+        cx: &mut DisplayHandle<'_>,
+        point: P,
+    ) -> Option<&Window> {
         let point = point.into();
         self.windows.iter().rev().find(|w| {
-            let bbox = window_rect(w, &self.id);
+            let bbox = window_rect(cx, w, &self.id);
             bbox.to_f64().contains(point)
         })
     }
@@ -146,43 +156,46 @@ impl Space {
     }
 
     /// Returns the window matching a given surface, if any
-    pub fn window_for_surface(&self, surface: &WlSurface) -> Option<&Window> {
-        if !surface.as_ref().is_alive() {
+    pub fn window_for_surface(&self, cx: &mut DisplayHandle<'_>, surface: &WlSurface) -> Option<&Window> {
+        if cx.object_info(surface.id()).is_err() {
             return None;
         }
 
-        self.windows
-            .iter()
-            .find(|w| w.toplevel().get_surface().map(|x| x == surface).unwrap_or(false))
+        self.windows.iter().find(|w| {
+            w.toplevel()
+                .get_surface(cx)
+                .map(|x| x == surface)
+                .unwrap_or(false)
+        })
     }
 
     /// Returns the layer matching a given surface, if any
-    pub fn layer_for_surface(&self, surface: &WlSurface) -> Option<LayerSurface> {
-        if !surface.as_ref().is_alive() {
+    pub fn layer_for_surface(&self, cx: &mut DisplayHandle<'_>, surface: &WlSurface) -> Option<LayerSurface> {
+        if cx.object_info(surface.id()).is_err() {
             return None;
         }
         self.outputs.iter().find_map(|o| {
             let map = layer_map_for_output(o);
-            map.layer_for_surface(surface).cloned()
+            map.layer_for_surface(cx,surface).cloned()
         })
     }
 
     /// Returns the geometry of a [`Window`] including its relative position inside the Space.
-    pub fn window_geometry(&self, w: &Window) -> Option<Rectangle<i32, Logical>> {
+    pub fn window_geometry(&self, cx: &mut DisplayHandle<'_>, w: &Window) -> Option<Rectangle<i32, Logical>> {
         if !self.windows.contains(w) {
             return None;
         }
 
-        Some(window_geo(w, &self.id))
+        Some(window_geo(cx, w, &self.id))
     }
 
     /// Returns the bounding box of a [`Window`] including its relative position inside the Space.
-    pub fn window_bbox(&self, w: &Window) -> Option<Rectangle<i32, Logical>> {
+    pub fn window_bbox(&self, cx: &mut DisplayHandle<'_>, w: &Window) -> Option<Rectangle<i32, Logical>> {
         if !self.windows.contains(w) {
             return None;
         }
 
-        Some(window_rect(w, &self.id))
+        Some(window_rect(cx, w, &self.id))
     }
 
     /// Maps an [`Output`] inside the space.
@@ -266,12 +279,12 @@ impl Space {
     }
 
     /// Returns all [`Output`]s a [`Window`] overlaps with.
-    pub fn outputs_for_window(&self, w: &Window) -> Vec<Output> {
+    pub fn outputs_for_window(&self, cx: &mut DisplayHandle<'_>, w: &Window) -> Vec<Output> {
         if !self.windows.contains(w) {
             return Vec::new();
         }
 
-        let w_geo = window_rect(w, &self.id);
+        let w_geo = window_rect(cx, w, &self.id);
         let mut outputs = self
             .outputs
             .iter()
@@ -301,17 +314,17 @@ impl Space {
     ///
     /// Needs to be called periodically, at best before every
     /// wayland socket flush.
-    pub fn refresh(&mut self) {
-        self.windows.retain(|w| w.toplevel().alive());
+    pub fn refresh(&mut self, cx: &mut DisplayHandle<'_>) {
+        self.windows.retain(|w| w.toplevel().alive(cx));
 
         for output in &mut self.outputs {
             output_state(self.id, output)
                 .surfaces
-                .retain(|s| s.as_ref().is_alive());
+                .retain(|s| cx.object_info(s.id()).is_ok());
         }
 
         for window in &self.windows {
-            let bbox = window_rect(window, &self.id);
+            let bbox = window_rect(cx, window, &self.id);
             let kind = window.toplevel();
 
             for output in &self.outputs {
@@ -324,7 +337,7 @@ impl Space {
                 // the output, if not no surface in the tree can intersect with
                 // the output.
                 if !output_geometry.overlaps(bbox) {
-                    if let Some(surface) = kind.get_surface() {
+                    if let Some(surface) = kind.get_surface(cx) {
                         with_surface_tree_downward(
                             surface,
                             (),
@@ -337,7 +350,7 @@ impl Space {
                                         wl_surface,
                                         output.name()
                                     );
-                                    output.leave(wl_surface);
+                                    output.leave(cx, wl_surface);
                                     output_state.surfaces.retain(|s| s != wl_surface);
                                 }
                             },
@@ -347,7 +360,7 @@ impl Space {
                     continue;
                 }
 
-                if let Some(surface) = kind.get_surface() {
+                if let Some(surface) = kind.get_surface(cx) {
                     with_surface_tree_downward(
                         surface,
                         window_loc(window, &self.id),
@@ -383,7 +396,7 @@ impl Space {
                                             wl_surface,
                                             output.name()
                                         );
-                                        output.enter(wl_surface);
+                                        output.enter(cx, wl_surface);
                                         output_state.surfaces.push(wl_surface.clone());
                                     }
                                 } else {
@@ -396,7 +409,7 @@ impl Space {
                                             wl_surface,
                                             output.name()
                                         );
-                                        output.leave(wl_surface);
+                                        output.leave(cx, wl_surface);
                                         output_state.surfaces.retain(|s| s != wl_surface);
                                     }
                                 }
@@ -409,7 +422,7 @@ impl Space {
                                         wl_surface,
                                         output.name()
                                     );
-                                    output.leave(wl_surface);
+                                    output.leave(cx, wl_surface);
                                     output_state.surfaces.retain(|s| s != wl_surface);
                                 }
                             }
@@ -423,16 +436,19 @@ impl Space {
 
     /// Should be called on commit to let the space automatically call [`Window::refresh`]
     /// for the window that belongs to the given surface, if managed by this space.
-    pub fn commit(&self, surface: &WlSurface) {
-        if is_sync_subsurface(surface) {
+    pub fn commit(&self, cx: &mut DisplayHandle<'_>, surface: &WlSurface) {
+        if is_sync_subsurface(cx, surface) {
             return;
         }
         let mut root = surface.clone();
-        while let Some(parent) = get_parent(&root) {
+        while let Some(parent) = get_parent(cx, &root) {
             root = parent;
         }
-        if let Some(window) = self.windows().find(|w| w.toplevel().get_surface() == Some(&root)) {
-            window.refresh();
+        if let Some(window) = self
+            .windows()
+            .find(|w| w.toplevel().get_surface(cx) == Some(&root))
+        {
+            window.refresh(cx);
         }
     }
 
@@ -456,6 +472,7 @@ impl Space {
     /// Returns a list of updated regions (or `None` if that list would be empty) in case of success.
     pub fn render_output<R>(
         &mut self,
+        cx: &mut DisplayHandle<'_>,
         renderer: &mut R,
         output: &Output,
         age: usize,
@@ -520,7 +537,7 @@ impl Space {
             .chain(layer_map.layers().map(|l| l as &SpaceElem<R>))
             .chain(custom_elements.iter().map(|c| c as &SpaceElem<R>))
         {
-            let geo = element.geometry(self.id);
+            let geo = element.geometry(cx, self.id);
             let old_geo = state.last_state.get(&ToplevelId::from(element)).cloned();
 
             // window was moved or resized
@@ -530,13 +547,16 @@ impl Space {
                 damage.push(geo);
             } else {
                 // window stayed at its place
-                let loc = element.location(self.id);
-                damage.extend(element.accumulated_damage(Some((self, output))).into_iter().map(
-                    |mut rect| {
-                        rect.loc += loc;
-                        rect
-                    },
-                ));
+                let loc = element.location(cx, self.id);
+                damage.extend(
+                    element
+                        .accumulated_damage(cx, Some((self, output)))
+                        .into_iter()
+                        .map(|mut rect| {
+                            rect.loc += loc;
+                            rect
+                        }),
+                );
             }
         }
 
@@ -592,21 +612,21 @@ impl Space {
                 // Then re-draw all windows & layers overlapping with a damage rect.
 
                 for element in layer_map
-                    .layers_on(WlrLayer::Background)
-                    .chain(layer_map.layers_on(WlrLayer::Bottom))
+                    .layers_on(cx,WlrLayer::Background)
+                    .chain(layer_map.layers_on(cx,WlrLayer::Bottom))
                     .map(|l| l as &SpaceElem<R>)
                     .chain(self.windows.iter().map(|w| w as &SpaceElem<R>))
                     .chain(
                         layer_map
-                            .layers_on(WlrLayer::Top)
-                            .chain(layer_map.layers_on(WlrLayer::Overlay))
+                            .layers_on(cx,WlrLayer::Top)
+                            .chain(layer_map.layers_on(cx, WlrLayer::Overlay))
                             .map(|l| l as &SpaceElem<R>),
                     )
                     .chain(custom_elements.iter().map(|c| c as &SpaceElem<R>))
                 {
-                    let geo = element.geometry(self.id);
+                    let geo = element.geometry(cx, self.id);
                     if damage.iter().any(|d| d.overlaps(geo)) {
-                        let loc = element.location(self.id) - output_geo.loc;
+                        let loc = element.location(cx, self.id) - output_geo.loc;
                         let damage = damage
                             .iter()
                             .flat_map(|d| d.intersection(geo))
@@ -619,6 +639,7 @@ impl Space {
                             damage
                         );
                         element.draw(
+                            cx,
                             self.id,
                             renderer,
                             frame,
@@ -650,7 +671,7 @@ impl Space {
             .chain(layer_map.layers().map(|l| l as &SpaceElem<R>))
             .chain(custom_elements.iter().map(|c| c as &SpaceElem<R>))
             .map(|elem| {
-                let geo = elem.geometry(self.id);
+                let geo = elem.geometry(cx, self.id);
                 (ToplevelId::from(elem), geo)
             })
             .collect();
@@ -664,14 +685,14 @@ impl Space {
     /// If `all` is set this will be send to `all` mapped surfaces.
     /// Otherwise only windows and layers previously drawn during the
     /// previous frame will be send frame events.
-    pub fn send_frames(&self, all: bool, time: u32) {
+    pub fn send_frames(&self, cx: &mut DisplayHandle<'_>, all: bool, time: u32) {
         for window in self.windows.iter().filter(|w| {
             all || {
                 let mut state = window_state(self.id, w);
                 std::mem::replace(&mut state.drawn, false)
             }
         }) {
-            window.send_frame(time);
+            window.send_frame(cx, time);
         }
 
         for output in self.outputs.iter() {
@@ -682,7 +703,7 @@ impl Space {
                     std::mem::replace(&mut state.drawn, false)
                 }
             }) {
-                layer.send_frame(time);
+                layer.send_frame(cx, time);
             }
         }
     }

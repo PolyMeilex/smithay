@@ -1,3 +1,5 @@
+use wayland_server::DisplayHandle;
+
 use crate::{
     backend::renderer::{Frame, ImportAll, Renderer, Texture},
     desktop::{
@@ -28,23 +30,27 @@ pub fn window_state(space: usize, w: &Window) -> RefMut<'_, WindowState> {
     })
 }
 
-pub fn window_geo(window: &Window, space_id: &usize) -> Rectangle<i32, Logical> {
+pub fn window_geo(cx: &mut DisplayHandle<'_>, window: &Window, space_id: &usize) -> Rectangle<i32, Logical> {
     let loc = window_loc(window, space_id);
-    let mut wgeo = window.geometry();
+    let mut wgeo = window.geometry(cx);
     wgeo.loc = loc;
     wgeo
 }
 
-pub fn window_rect(window: &Window, space_id: &usize) -> Rectangle<i32, Logical> {
+pub fn window_rect(cx: &mut DisplayHandle<'_>, window: &Window, space_id: &usize) -> Rectangle<i32, Logical> {
     let loc = window_loc(window, space_id);
-    let mut wgeo = window.bbox();
+    let mut wgeo = window.bbox(cx);
     wgeo.loc += loc;
     wgeo
 }
 
-pub fn window_rect_with_popups(window: &Window, space_id: &usize) -> Rectangle<i32, Logical> {
+pub fn window_rect_with_popups(
+    cx: &mut DisplayHandle<'_>,
+    window: &Window,
+    space_id: &usize,
+) -> Rectangle<i32, Logical> {
     let loc = window_loc(window, space_id);
-    let mut wgeo = window.bbox_with_popups();
+    let mut wgeo = window.bbox_with_popups(cx);
     wgeo.loc += loc;
     wgeo
 }
@@ -75,20 +81,25 @@ where
         TypeId::of::<Window>()
     }
 
-    fn location(&self, space_id: usize) -> Point<i32, Logical> {
+    fn location(&self, _cx: &mut DisplayHandle<'_>, space_id: usize) -> Point<i32, Logical> {
         window_loc(self, &space_id)
     }
 
-    fn geometry(&self, space_id: usize) -> Rectangle<i32, Logical> {
-        window_rect_with_popups(self, &space_id)
+    fn geometry(&self, cx: &mut DisplayHandle<'_>, space_id: usize) -> Rectangle<i32, Logical> {
+        window_rect_with_popups(cx, self, &space_id)
     }
 
-    fn accumulated_damage(&self, for_values: Option<(&Space, &Output)>) -> Vec<Rectangle<i32, Logical>> {
-        self.accumulated_damage(for_values)
+    fn accumulated_damage(
+        &self,
+        cx: &mut DisplayHandle<'_>,
+        for_values: Option<(&Space, &Output)>,
+    ) -> Vec<Rectangle<i32, Logical>> {
+        self.accumulated_damage(cx, for_values)
     }
 
     fn draw(
         &self,
+        cx: &mut DisplayHandle<'_>,
         space_id: usize,
         renderer: &mut R,
         frame: &mut F,
@@ -97,7 +108,7 @@ where
         damage: &[Rectangle<i32, Logical>],
         log: &slog::Logger,
     ) -> Result<(), R::Error> {
-        let res = draw_window(renderer, frame, self, scale, location, damage, log);
+        let res = draw_window(cx, renderer, frame, self, scale, location, damage, log);
         if res.is_ok() {
             window_state(space_id, self).drawn = true;
         }

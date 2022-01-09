@@ -12,7 +12,7 @@ use crate::{
     },
 };
 use indexmap::IndexSet;
-use wayland_server::protocol::wl_surface::WlSurface;
+use wayland_server::{protocol::wl_surface::WlSurface, DisplayHandle, Resource};
 
 use std::{
     cell::{RefCell, RefMut},
@@ -27,7 +27,7 @@ crate::utils::ids::id_gen!(next_layer_id, LAYER_ID, LAYER_IDS);
 #[derive(Debug)]
 pub struct LayerMap {
     layers: IndexSet<LayerSurface>,
-    output: Weak<(Mutex<OutputInner>, wayland_server::UserDataMap)>,
+    output: (Weak<Mutex<OutputInner>>, Weak<UserDataMap>),
     zone: Rectangle<i32, Logical>,
 }
 
@@ -42,11 +42,12 @@ pub struct LayerMap {
 /// of the same output using this function *will* result in a panic.
 pub fn layer_map_for_output(o: &Output) -> RefMut<'_, LayerMap> {
     let userdata = o.user_data();
-    let weak_output = Arc::downgrade(&o.inner);
+    let weak_output = Arc::downgrade(&o.data.inner);
+    let weak_user_data = Arc::downgrade(&o.data.user_data_map);
     userdata.insert_if_missing(|| {
         RefCell::new(LayerMap {
             layers: IndexSet::new(),
-            output: weak_output,
+            output: (weak_output, weak_user_data),
             zone: Rectangle::from_loc_and_size(
                 (0, 0),
                 o.current_mode()
@@ -66,7 +67,7 @@ pub enum LayerError {
 
 impl LayerMap {
     /// Map a [`LayerSurface`] to this [`LayerMap`].
-    pub fn map_layer(&mut self, layer: &LayerSurface) -> Result<(), LayerError> {
+    pub fn map_layer(&mut self, cx: &mut DisplayHandle<'_>, layer: &LayerSurface) -> Result<(), LayerError> {
         if !self.layers.contains(layer) {
             if layer
                 .0
@@ -79,16 +80,16 @@ impl LayerMap {
             }
 
             self.layers.insert(layer.clone());
-            self.arrange();
+            self.arrange(cx);
         }
         Ok(())
     }
 
     /// Remove a [`LayerSurface`] from this [`LayerMap`].
-    pub fn unmap_layer(&mut self, layer: &LayerSurface) {
+    pub fn unmap_layer(&mut self, cx: &mut DisplayHandle<'_>, layer: &LayerSurface) {
         if self.layers.shift_remove(layer) {
             let _ = layer.user_data().get::<LayerUserdata>().take();
-            self.arrange();
+            self.arrange(cx);
         }
     }
 
@@ -101,25 +102,30 @@ impl LayerMap {
     ///
     /// If the surface was not previously mapped onto this layer map,
     /// this function return `None`.
-    pub fn layer_geometry(&self, layer: &LayerSurface) -> Option<Rectangle<i32, Logical>> {
+    pub fn layer_geometry(
+        &self,
+        cx: &mut DisplayHandle<'_>,
+        layer: &LayerSurface,
+    ) -> Option<Rectangle<i32, Logical>> {
         if !self.layers.contains(layer) {
             return None;
         }
-        let mut bbox = layer.bbox_with_popups();
+        let mut bbox = layer.bbox_with_popups(cx);
         let state = layer_state(layer);
         bbox.loc += state.location;
         Some(bbox)
     }
 
     /// Returns a [`LayerSurface`] under a given point and on a given layer, if any.
-    pub fn layer_under<P: Into<Point<f64, Logical>>>(
+    pub fn layer_under<'a, P: Into<Point<f64, Logical>>>(
         &self,
+        cx: &mut DisplayHandle<'_>,
         layer: WlrLayer,
         point: P,
     ) -> Option<&LayerSurface> {
         let point = point.into();
-        self.layers_on(layer).rev().find(|l| {
-            let bbox = self.layer_geometry(l).unwrap();
+        self.layers_on(cx, layer).rev().find(|l| {
+            let bbox = self.layer_geometry(cx, l).unwrap();
             bbox.to_f64().contains(point)
         })
     }
@@ -130,27 +136,38 @@ impl LayerMap {
     }
 
     /// Iterator over all [`LayerSurface`]s currently mapped on a given layer.
-    pub fn layers_on(&self, layer: WlrLayer) -> impl DoubleEndedIterator<Item = &LayerSurface> {
-        self.layers
-            .iter()
-            .filter(move |l| l.layer().map(|l| l == layer).unwrap_or(false))
+    pub fn layers_on(
+        &self,
+        cx: &mut DisplayHandle<'_>,
+        layer: WlrLayer,
+    ) -> impl DoubleEndedIterator<Item = &LayerSurface> {
+        // self.layers
+        //     .iter()
+        //     .filter(move |l| l.layer(cx).map(|l| l == layer).unwrap_or(false))
+
+        todo!();
+        Box::new(std::iter::empty())
     }
 
     /// Returns the [`LayerSurface`] matching a given [`WlSurface`], if any.
-    pub fn layer_for_surface(&self, surface: &WlSurface) -> Option<&LayerSurface> {
-        if !surface.as_ref().is_alive() {
+    pub fn layer_for_surface(
+        &self,
+        cx: &mut DisplayHandle<'_>,
+        surface: &WlSurface,
+    ) -> Option<&LayerSurface> {
+        if cx.object_info(surface.id()).is_err() {
             return None;
         }
 
         self.layers
             .iter()
-            .find(|w| w.get_surface().map(|x| x == surface).unwrap_or(false))
+            .find(|w| w.get_surface(cx).map(|x| x == surface).unwrap_or(false))
     }
 
     /// Force re-arranging the layer surfaces, e.g. when the output size changes.
     ///
     /// Note: Mapping or unmapping a layer surface will automatically cause a re-arrangement.
-    pub fn arrange(&mut self) {
+    pub fn arrange(&mut self, cx: &mut DisplayHandle<'_>) {
         if let Some(output) = self.output() {
             let output_rect = Rectangle::from_loc_and_size(
                 (0, 0),
@@ -167,7 +184,7 @@ impl LayerMap {
             );
 
             for layer in self.layers.iter() {
-                let surface = if let Some(surface) = layer.get_surface() {
+                let surface = if let Some(surface) = layer.get_surface(cx) {
                     surface
                 } else {
                     continue;
@@ -242,12 +259,12 @@ impl LayerMap {
                 let size_changed = layer
                     .0
                     .surface
-                    .with_pending_state(|state| {
+                    .with_pending_state(cx, |state| {
                         state.size.replace(size).map(|old| old != size).unwrap_or(true)
                     })
                     .unwrap();
                 if size_changed {
-                    layer.0.surface.send_configure();
+                    layer.0.surface.send_configure(cx);
                 }
 
                 layer_state(layer).location = location;
@@ -259,15 +276,16 @@ impl LayerMap {
     }
 
     fn output(&self) -> Option<Output> {
-        self.output.upgrade().map(|inner| Output { inner })
+        // self.output.upgrade().map(|inner| Output { inner })
+        todo!()
     }
 
     /// Cleanup some internally used resources.
     ///
     /// This function needs to be called periodically (though not necessarily frequently)
     /// to be able cleanup internally used resources.
-    pub fn cleanup(&mut self) {
-        self.layers.retain(|layer| layer.alive())
+    pub fn cleanup(&mut self, cx: &mut DisplayHandle<'_>) {
+        self.layers.retain(|layer| layer.alive(cx))
     }
 }
 
@@ -332,8 +350,8 @@ impl LayerSurface {
     }
 
     /// Checks if the surface is still alive
-    pub fn alive(&self) -> bool {
-        self.0.surface.alive()
+    pub fn alive(&self, cx: &mut DisplayHandle<'_>) -> bool {
+        self.0.surface.alive(cx)
     }
 
     /// Returns the underlying [`WlrLayerSurface`]
@@ -342,13 +360,13 @@ impl LayerSurface {
     }
 
     /// Returns the underlying [`WlSurface`]
-    pub fn get_surface(&self) -> Option<&WlSurface> {
-        self.0.surface.get_surface()
+    pub fn get_surface(&self, cx: &mut DisplayHandle<'_>) -> Option<&WlSurface> {
+        self.0.surface.get_surface(cx)
     }
 
     /// Returns the cached protocol state
-    pub fn cached_state(&self) -> Option<LayerSurfaceCachedState> {
-        self.0.surface.get_surface().map(|surface| {
+    pub fn cached_state(&self, cx: &mut DisplayHandle<'_>) -> Option<LayerSurfaceCachedState> {
+        self.0.surface.get_surface(cx).map(|surface| {
             with_states(surface, |states| {
                 *states.cached_state.current::<LayerSurfaceCachedState>()
             })
@@ -357,10 +375,10 @@ impl LayerSurface {
     }
 
     /// Returns true, if the surface has indicated, that it is able to process keyboard events.
-    pub fn can_receive_keyboard_focus(&self) -> bool {
+    pub fn can_receive_keyboard_focus(&self, cx: &mut DisplayHandle<'_>) -> bool {
         self.0
             .surface
-            .get_surface()
+            .get_surface(cx)
             .map(|surface| {
                 with_states(surface, |states| {
                     match states
@@ -378,8 +396,8 @@ impl LayerSurface {
     }
 
     /// Returns the layer this surface resides on, if any yet.
-    pub fn layer(&self) -> Option<WlrLayer> {
-        self.0.surface.get_surface().map(|surface| {
+    pub fn layer(&self, cx: &mut DisplayHandle<'_>) -> Option<WlrLayer> {
+        self.0.surface.get_surface(cx).map(|surface| {
             with_states(surface, |states| {
                 states.cached_state.current::<LayerSurfaceCachedState>().layer
             })
@@ -393,8 +411,8 @@ impl LayerSurface {
     }
 
     /// Returns the bounding box over this layer surface and its subsurfaces.
-    pub fn bbox(&self) -> Rectangle<i32, Logical> {
-        if let Some(surface) = self.0.surface.get_surface() {
+    pub fn bbox(&self, cx: &mut DisplayHandle<'_>) -> Rectangle<i32, Logical> {
+        if let Some(surface) = self.0.surface.get_surface(cx) {
             bbox_from_surface_tree(surface, (0, 0))
         } else {
             Rectangle::from_loc_and_size((0, 0), (0, 0))
@@ -405,15 +423,15 @@ impl LayerSurface {
     ///
     /// Note: You need to use a [`PopupManager`] to track popups, otherwise the bounding box
     /// will not include the popups.
-    pub fn bbox_with_popups(&self) -> Rectangle<i32, Logical> {
-        let mut bounding_box = self.bbox();
-        if let Some(surface) = self.0.surface.get_surface() {
+    pub fn bbox_with_popups(&self, cx: &mut DisplayHandle<'_>) -> Rectangle<i32, Logical> {
+        let mut bounding_box = self.bbox(cx);
+        if let Some(surface) = self.0.surface.get_surface(cx) {
             for (popup, location) in PopupManager::popups_for_surface(surface)
                 .ok()
                 .into_iter()
                 .flatten()
             {
-                if let Some(surface) = popup.get_surface() {
+                if let Some(surface) = popup.get_surface(cx) {
                     bounding_box = bounding_box.merge(bbox_from_surface_tree(surface, location));
                 }
             }
@@ -427,17 +445,18 @@ impl LayerSurface {
     /// - `point` needs to be relative to (0,0) of the layer surface.
     pub fn surface_under<P: Into<Point<f64, Logical>>>(
         &self,
+        cx: &mut DisplayHandle<'_>,
         point: P,
     ) -> Option<(WlSurface, Point<i32, Logical>)> {
         let point = point.into();
-        if let Some(surface) = self.get_surface() {
+        if let Some(surface) = self.get_surface(cx) {
             for (popup, location) in PopupManager::popups_for_surface(surface)
                 .ok()
                 .into_iter()
                 .flatten()
             {
                 if let Some(result) = popup
-                    .get_surface()
+                    .get_surface(cx)
                     .and_then(|surface| under_from_surface_tree(surface, point, location))
                 {
                     return Some(result);
@@ -457,21 +476,22 @@ impl LayerSurface {
     /// Subsequent calls will return an empty vector until the buffer is updated again.
     pub(super) fn accumulated_damage(
         &self,
+        cx: &mut DisplayHandle<'_>,
         for_values: Option<(&Space, &Output)>,
     ) -> Vec<Rectangle<i32, Logical>> {
         let mut damage = Vec::new();
-        if let Some(surface) = self.get_surface() {
+        if let Some(surface) = self.get_surface(cx) {
             damage.extend(
                 damage_from_surface_tree(surface, (0, 0), for_values)
                     .into_iter()
-                    .flat_map(|rect| rect.intersection(self.bbox())),
+                    .flat_map(|rect| rect.intersection(self.bbox(cx))),
             );
             for (popup, location) in PopupManager::popups_for_surface(surface)
                 .ok()
                 .into_iter()
                 .flatten()
             {
-                if let Some(surface) = popup.get_surface() {
+                if let Some(surface) = popup.get_surface(cx) {
                     let bbox = bbox_from_surface_tree(surface, location);
                     let popup_damage = damage_from_surface_tree(surface, location, for_values);
                     damage.extend(popup_damage.into_iter().flat_map(|rect| rect.intersection(bbox)));
@@ -483,9 +503,9 @@ impl LayerSurface {
 
     /// Sends the frame callback to all the subsurfaces in this
     /// window that requested it
-    pub fn send_frame(&self, time: u32) {
-        if let Some(wl_surface) = self.0.surface.get_surface() {
-            send_frames_surface_tree(wl_surface, time)
+    pub fn send_frame(&self, cx: &mut DisplayHandle<'_>, time: u32) {
+        if let Some(wl_surface) = self.0.surface.get_surface(cx) {
+            send_frames_surface_tree(cx, wl_surface, time)
         }
     }
 
@@ -505,6 +525,7 @@ impl LayerSurface {
 /// [`crate::backend::renderer::utils::on_commit_buffer_handler`]
 /// to let smithay handle buffer management.
 pub fn draw_layer_surface<R, E, F, T, P>(
+    cx: &mut DisplayHandle<'_>,
     renderer: &mut R,
     frame: &mut F,
     layer: &LayerSurface,
@@ -521,14 +542,14 @@ where
     P: Into<Point<i32, Logical>>,
 {
     let location = location.into();
-    if let Some(surface) = layer.get_surface() {
+    if let Some(surface) = layer.get_surface(cx) {
         draw_surface_tree(renderer, frame, surface, scale, location, damage, log)?;
         for (popup, p_location) in PopupManager::popups_for_surface(surface)
             .ok()
             .into_iter()
             .flatten()
         {
-            if let Some(surface) = popup.get_surface() {
+            if let Some(surface) = popup.get_surface(cx) {
                 let damage = damage
                     .iter()
                     .cloned()

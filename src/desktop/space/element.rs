@@ -8,7 +8,7 @@ use std::{
     any::{Any, TypeId},
     hash::{Hash, Hasher},
 };
-use wayland_server::protocol::wl_surface::WlSurface;
+use wayland_server::{protocol::wl_surface::WlSurface, DisplayHandle};
 
 /// Trait for custom elements to be rendered during [`Space::render_output`].
 pub trait RenderElement<R, F, E, T>
@@ -65,14 +65,19 @@ where
 {
     fn id(&self) -> usize;
     fn type_of(&self) -> TypeId;
-    fn location(&self, space_id: usize) -> Point<i32, Logical> {
-        self.geometry(space_id).loc
+    fn location(&self, cx: &mut DisplayHandle<'_>, space_id: usize) -> Point<i32, Logical> {
+        self.geometry(cx, space_id).loc
     }
-    fn geometry(&self, space_id: usize) -> Rectangle<i32, Logical>;
-    fn accumulated_damage(&self, for_values: Option<(&Space, &Output)>) -> Vec<Rectangle<i32, Logical>>;
+    fn geometry(&self, cx: &mut DisplayHandle<'_>, space_id: usize) -> Rectangle<i32, Logical>;
+    fn accumulated_damage(
+        &self,
+        cx: &mut DisplayHandle<'_>,
+        for_values: Option<(&Space, &Output)>,
+    ) -> Vec<Rectangle<i32, Logical>>;
     #[allow(clippy::too_many_arguments)]
     fn draw(
         &self,
+        cx: &mut DisplayHandle<'_>,
         space_id: usize,
         renderer: &mut R,
         frame: &mut F,
@@ -96,14 +101,19 @@ where
     fn type_of(&self) -> TypeId {
         (&**self as &dyn RenderElement<R, F, E, T>).type_of()
     }
-    fn geometry(&self, _space_id: usize) -> Rectangle<i32, Logical> {
+    fn geometry(&self, _cx: &mut DisplayHandle<'_>, _space_id: usize) -> Rectangle<i32, Logical> {
         (&**self as &dyn RenderElement<R, F, E, T>).geometry()
     }
-    fn accumulated_damage(&self, for_values: Option<(&Space, &Output)>) -> Vec<Rectangle<i32, Logical>> {
+    fn accumulated_damage(
+        &self,
+        _cx: &mut DisplayHandle<'_>,
+        for_values: Option<(&Space, &Output)>,
+    ) -> Vec<Rectangle<i32, Logical>> {
         (&**self as &dyn RenderElement<R, F, E, T>).accumulated_damage(for_values.map(SpaceOutputTuple::from))
     }
     fn draw(
         &self,
+        _cx: &mut DisplayHandle<'_>,
         _space_id: usize,
         renderer: &mut R,
         frame: &mut F,
@@ -140,7 +150,7 @@ where
     T: Texture + 'static,
 {
     fn id(&self) -> usize {
-        self.surface.as_ref().id() as usize
+        self.surface.id().protocol_id() as usize
     }
 
     fn geometry(&self) -> Rectangle<i32, Logical> {
@@ -183,7 +193,7 @@ pub struct SpaceOutputTuple<'a, 'b>(pub &'a Space, pub &'b Output);
 impl<'a, 'b> Hash for SpaceOutputTuple<'a, 'b> {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.0.id.hash(state);
-        (std::sync::Arc::as_ptr(&self.1.inner) as *const () as usize).hash(state);
+        (std::sync::Arc::as_ptr(&self.1.data.inner) as *const () as usize).hash(state);
     }
 }
 
@@ -192,7 +202,7 @@ impl<'a, 'b> SpaceOutputTuple<'a, 'b> {
     pub fn owned_hash(&self) -> SpaceOutputHash {
         SpaceOutputHash(
             self.0.id,
-            std::sync::Arc::as_ptr(&self.1.inner) as *const () as usize,
+            std::sync::Arc::as_ptr(&self.1.data.inner) as *const () as usize,
         )
     }
 }

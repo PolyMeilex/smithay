@@ -1,3 +1,5 @@
+use wayland_server::DisplayHandle;
+
 use crate::{
     backend::renderer::{Frame, ImportAll, Renderer, Texture},
     desktop::{
@@ -42,19 +44,24 @@ where
         TypeId::of::<LayerSurface>()
     }
 
-    fn geometry(&self, _space_id: usize) -> Rectangle<i32, Logical> {
-        let mut bbox = self.bbox_with_popups();
+    fn geometry(&self, cx: &mut DisplayHandle<'_>, _space_id: usize) -> Rectangle<i32, Logical> {
+        let mut bbox = self.bbox_with_popups(cx);
         let state = output_layer_state(self);
         bbox.loc += state.location;
         bbox
     }
 
-    fn accumulated_damage(&self, for_values: Option<(&Space, &Output)>) -> Vec<Rectangle<i32, Logical>> {
-        self.accumulated_damage(for_values)
+    fn accumulated_damage(
+        &self,
+        cx: &mut DisplayHandle<'_>,
+        for_values: Option<(&Space, &Output)>,
+    ) -> Vec<Rectangle<i32, Logical>> {
+        self.accumulated_damage(cx, for_values)
     }
 
     fn draw(
         &self,
+        cx: &mut DisplayHandle<'_>,
         space_id: usize,
         renderer: &mut R,
         frame: &mut F,
@@ -63,7 +70,7 @@ where
         damage: &[Rectangle<i32, Logical>],
         log: &slog::Logger,
     ) -> Result<(), R::Error> {
-        let res = draw_layer_surface(renderer, frame, self, scale, location, damage, log);
+        let res = draw_layer_surface(cx, renderer, frame, self, scale, location, damage, log);
         if res.is_ok() {
             layer_state(space_id, self).drawn = true;
         }
