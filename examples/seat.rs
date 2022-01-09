@@ -11,11 +11,11 @@ use wayland_server::socket::ListeningSocket;
 use wayland_server::{delegate_dispatch, delegate_global_dispatch};
 
 struct App {
-    seat_state: SeatState,
+    seat_state: SeatState<()>,
 }
 
-impl SeatHandler for App {
-    fn seat_state(&mut self) -> &mut SeatState {
+impl SeatHandler<()> for App {
+    fn seat_state(&mut self) -> &mut SeatState<()> {
         &mut self.seat_state
     }
 }
@@ -80,5 +80,5 @@ impl ClientData<App> for ClientState {
     }
 }
 
-delegate_global_dispatch!(App: [WlSeat] => SeatState);
-delegate_dispatch!(App: [WlSeat, WlPointer, WlKeyboard] => SeatState);
+delegate_global_dispatch!(App: [WlSeat] => SeatState<()>);
+delegate_dispatch!(App: [WlSeat, WlPointer, WlKeyboard] => SeatState<()>);
