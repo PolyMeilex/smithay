@@ -314,7 +314,7 @@ impl<Backend> AnvilState<Backend> {
             } else if source == wl_pointer::AxisSource::Finger {
                 frame = frame.stop(wl_pointer::Axis::VerticalScroll);
             }
-            self.pointer.axis(frame);
+            self.pointer.clone().axis(frame, &mut ());
         }
     }
 }
@@ -538,7 +538,7 @@ impl AnvilState<UdevData> {
 
         let under = self.surface_under();
         self.pointer
-            .motion(self.pointer_location, under, serial, evt.time());
+            .motion(self.pointer_location, under, serial, evt.time(), &mut ());
     }
 
     fn on_tablet_tool_axis<B: InputBackend>(&mut self, evt: B::TabletToolAxisEvent) {

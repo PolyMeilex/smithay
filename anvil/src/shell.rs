@@ -69,6 +69,7 @@ impl PointerGrab for MoveSurfaceGrab {
         state: ButtonState,
         serial: Serial,
         time: u32,
+        _ddata: DispatchData<'_>,
     ) {
         handle.button(button, state, serial, time);
         if handle.current_pressed().is_empty() {
@@ -77,7 +78,7 @@ impl PointerGrab for MoveSurfaceGrab {
         }
     }
 
-    fn axis(&mut self, handle: &mut PointerInnerHandle<'_>, details: AxisFrame) {
+    fn axis(&mut self, handle: &mut PointerInnerHandle<'_>, details: AxisFrame, _ddata: DispatchData<'_>) {
         handle.axis(details)
     }
 
@@ -144,6 +145,7 @@ impl PointerGrab for ResizeSurfaceGrab {
         _focus: Option<(wl_surface::WlSurface, Point<i32, Logical>)>,
         serial: Serial,
         time: u32,
+        _ddata: DispatchData<'_>,
     ) {
         // It is impossible to get `min_size` and `max_size` of dead toplevel, so we return early.
         if !self.window.toplevel().alive() | self.window.toplevel().get_surface().is_none() {
@@ -226,6 +228,7 @@ impl PointerGrab for ResizeSurfaceGrab {
         state: ButtonState,
         serial: Serial,
         time: u32,
+        _ddata: DispatchData<'_>,
     ) {
         handle.button(button, state, serial, time);
         if handle.current_pressed().is_empty() {
@@ -278,7 +281,7 @@ impl PointerGrab for ResizeSurfaceGrab {
         }
     }
 
-    fn axis(&mut self, handle: &mut PointerInnerHandle<'_>, details: AxisFrame) {
+    fn axis(&mut self, handle: &mut PointerInnerHandle<'_>, details: AxisFrame, _ddata: DispatchData<'_>) {
         handle.axis(details)
     }
 

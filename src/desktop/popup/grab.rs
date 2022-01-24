@@ -1,6 +1,9 @@
 use std::sync::{Arc, Mutex};
 
-use wayland_server::protocol::{wl_keyboard::KeyState, wl_pointer::ButtonState, wl_surface::WlSurface};
+use wayland_server::{
+    protocol::{wl_keyboard::KeyState, wl_pointer::ButtonState, wl_surface::WlSurface},
+    DispatchData,
+};
 
 use crate::{
     utils::{DeadResource, Logical, Point},
@@ -440,6 +443,7 @@ impl PointerGrab for PopupPointerGrab {
         focus: Option<(WlSurface, Point<i32, Logical>)>,
         serial: Serial,
         time: u32,
+        _ddata: DispatchData<'_>,
     ) {
         if self.popup_grab.has_ended() {
             handle.unset_grab(serial, time);
@@ -469,6 +473,7 @@ impl PointerGrab for PopupPointerGrab {
         state: ButtonState,
         serial: Serial,
         time: u32,
+        _ddata: DispatchData<'_>,
     ) {
         if self.popup_grab.has_ended() {
             handle.unset_grab(serial, time);
@@ -491,7 +496,7 @@ impl PointerGrab for PopupPointerGrab {
         handle.button(button, state, serial, time);
     }
 
-    fn axis(&mut self, handle: &mut PointerInnerHandle<'_>, details: AxisFrame) {
+    fn axis(&mut self, handle: &mut PointerInnerHandle<'_>, details: AxisFrame, _ddata: DispatchData<'_>) {
         handle.axis(details);
     }
 
