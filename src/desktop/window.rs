@@ -209,7 +209,7 @@ impl Window {
         match self.0.toplevel {
             Kind::Xdg(ref t) => t.send_configure(),
             #[cfg(feature = "xwayland")]
-            Kind::X11(ref _t) => unimplemented!(),
+            Kind::X11(ref _t) => {},
         }
     }
 
