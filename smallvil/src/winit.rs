@@ -14,7 +14,7 @@ use smithay::{
 
 use crate::{CalloopData, Smallvil};
 
-pub fn init_winit(
+pub fn start(
     event_loop: &mut EventLoop<CalloopData>,
     data: &mut CalloopData,
 ) -> Result<(), Box<dyn std::error::Error>> {
@@ -45,10 +45,7 @@ pub fn init_winit(
 
     let mut damage_tracker = OutputDamageTracker::from_output(&output);
 
-    std::env::set_var("WAYLAND_DISPLAY", &state.socket_name);
-
     event_loop.handle().insert_source(winit, move |event, _, data| {
-        let display = &mut data.display_handle;
         let state = &mut data.state;
 
         match event {
@@ -90,10 +87,6 @@ pub fn init_winit(
                         |_, _| Some(output.clone()),
                     )
                 });
-
-                state.space.refresh();
-                state.popups.cleanup();
-                let _ = display.flush_clients();
 
                 // Ask for redraw to schedule new frame.
                 backend.window().request_redraw();

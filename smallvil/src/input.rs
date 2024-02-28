@@ -1,10 +1,10 @@
 use smithay::{
     backend::input::{
         AbsolutePositionEvent, Axis, AxisSource, ButtonState, Event, InputBackend, InputEvent,
-        KeyboardKeyEvent, PointerAxisEvent, PointerButtonEvent,
+        KeyboardKeyEvent, PointerAxisEvent, PointerButtonEvent, PointerMotionEvent,
     },
     input::{
-        keyboard::FilterResult,
+        keyboard::{FilterResult, Keysym},
         pointer::{AxisFrame, ButtonEvent, MotionEvent},
     },
     reexports::wayland_server::protocol::wl_surface::WlSurface,
@@ -20,16 +20,48 @@ impl Smallvil {
                 let serial = SERIAL_COUNTER.next_serial();
                 let time = Event::time_msec(&event);
 
-                self.seat.get_keyboard().unwrap().input::<(), _>(
+                struct Exit;
+
+                let res = self.seat.get_keyboard().unwrap().input::<Exit, _>(
                     self,
                     event.key_code(),
                     event.state(),
                     serial,
                     time,
-                    |_, _, _| FilterResult::Forward,
+                    |_, modifiers, keysym| {
+                        let keysym = keysym.modified_sym();
+
+                        if modifiers.logo && keysym == Keysym::q {
+                            FilterResult::Intercept(Exit)
+                        } else {
+                            FilterResult::Forward
+                        }
+                    },
                 );
+
+                if let Some(Exit) = res {
+                    self.loop_signal.stop();
+                }
             }
-            InputEvent::PointerMotion { .. } => {}
+            InputEvent::PointerMotion { event, .. } => {
+                let serial = SERIAL_COUNTER.next_serial();
+
+                let pointer = self.seat.get_pointer().unwrap();
+                let pointer_location = pointer.current_location() + event.delta();
+
+                let under = self.surface_under(pointer_location);
+
+                pointer.motion(
+                    self,
+                    under,
+                    &MotionEvent {
+                        location: pointer_location,
+                        serial,
+                        time: event.time_msec(),
+                    },
+                );
+                pointer.frame(self);
+            }
             InputEvent::PointerMotionAbsolute { event, .. } => {
                 let output = self.space.outputs().next().unwrap();
 

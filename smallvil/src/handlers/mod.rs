@@ -1,4 +1,5 @@
 mod compositor;
+mod drm;
 mod xdg_shell;
 
 use crate::Smallvil;

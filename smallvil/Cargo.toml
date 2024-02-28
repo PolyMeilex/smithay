@@ -5,13 +5,26 @@ edition = "2021"
 
 [dependencies]
 tracing-subscriber = { version = "0.3.16", features = ["env-filter"] }
+tracing = "0.1.37"
 bitflags = "2.2.1"
+smithay-drm-extras = { path = "../smithay-drm-extras" }
 
 [dependencies.smithay]
 path = "../"
 default-features = false
 features = [
-    "backend_winit",
-    "wayland_frontend",
-    "desktop",
+  "backend_winit",
+  "wayland_frontend",
+  "desktop",
+
+  "backend_libinput",
+  "backend_udev",
+  "backend_drm",
+  "backend_gbm",
+  "backend_vulkan",
+  "backend_egl",
+  "backend_session_libseat",
+  "renderer_gl",
+  "renderer_pixman",
+  "renderer_multi",
 ]
