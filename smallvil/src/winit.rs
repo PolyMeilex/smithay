@@ -12,15 +12,12 @@ use smithay::{
     utils::{Rectangle, Transform},
 };
 
-use crate::{CalloopData, Smallvil};
+use crate::Smallvil;
 
 pub fn start(
-    event_loop: &mut EventLoop<CalloopData>,
-    data: &mut CalloopData,
+    event_loop: &mut EventLoop<Smallvil>,
+    data: &mut Smallvil,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let display_handle = &mut data.display_handle;
-    let state = &mut data.state;
-
     let (mut backend, winit) = winit::init()?;
 
     let mode = Mode {
@@ -37,17 +34,15 @@ pub fn start(
             model: "Winit".into(),
         },
     );
-    let _global = output.create_global::<Smallvil>(display_handle);
+    let _global = output.create_global::<Smallvil>(&data.display_handle);
     output.change_current_state(Some(mode), Some(Transform::Flipped180), None, Some((0, 0).into()));
     output.set_preferred(mode);
 
-    state.space.map_output(&output, (0, 0));
+    data.space.map_output(&output, (0, 0));
 
     let mut damage_tracker = OutputDamageTracker::from_output(&output);
 
-    event_loop.handle().insert_source(winit, move |event, _, data| {
-        let state = &mut data.state;
-
+    event_loop.handle().insert_source(winit, move |event, _, state| {
         match event {
             WinitEvent::Resized { size, .. } => {
                 output.change_current_state(

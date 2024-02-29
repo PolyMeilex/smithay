@@ -27,4 +27,5 @@ features = [
   "renderer_gl",
   "renderer_pixman",
   "renderer_multi",
+  "use_system_lib",
 ]

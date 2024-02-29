@@ -14,6 +14,7 @@ use smithay::{
     utils::{Logical, Point},
     wayland::{
         compositor::{CompositorClientState, CompositorState},
+        dmabuf::DmabufState,
         output::OutputManagerState,
         selection::data_device::DataDeviceState,
         shell::xdg::XdgShellState,
@@ -22,7 +23,12 @@ use smithay::{
     },
 };
 
-use crate::CalloopData;
+use crate::drm::DrmState;
+
+pub enum Backend {
+    Drm(DrmState<Smallvil>),
+    Winit,
+}
 
 pub struct Smallvil {
     pub start_time: std::time::Instant,
@@ -37,15 +43,20 @@ pub struct Smallvil {
     pub xdg_shell_state: XdgShellState,
     pub shm_state: ShmState,
     pub output_manager_state: OutputManagerState,
-    pub seat_state: SeatState<Smallvil>,
+    pub seat_state: SeatState<Self>,
     pub data_device_state: DataDeviceState,
+    pub dmabuf_state: DmabufState,
     pub popups: PopupManager,
 
     pub seat: Seat<Self>,
+
+    pub backend: Backend,
 }
 
 impl Smallvil {
-    pub fn new(event_loop: &mut EventLoop<CalloopData>, display: Display<Self>) -> Self {
+    pub fn new(event_loop: &mut EventLoop<Self>, backend: Backend) -> Self {
+        let display: Display<Smallvil> = Display::new().unwrap();
+
         let start_time = std::time::Instant::now();
 
         let dh = display.handle();
@@ -57,6 +68,7 @@ impl Smallvil {
         let mut seat_state = SeatState::new();
         let data_device_state = DataDeviceState::new::<Self>(&dh);
         let popups = PopupManager::default();
+        let dmabuf_state = DmabufState::new();
 
         // A seat is a group of keyboards, pointer and touch devices.
         // A seat typically has a pointer and maintains a keyboard focus and a pointer focus.
@@ -83,11 +95,10 @@ impl Smallvil {
 
         Self {
             start_time,
+            socket_name,
             display_handle: dh,
-
             space,
             loop_signal,
-            socket_name,
 
             compositor_state,
             xdg_shell_state,
@@ -95,15 +106,14 @@ impl Smallvil {
             output_manager_state,
             seat_state,
             data_device_state,
+            dmabuf_state,
             popups,
             seat,
+            backend,
         }
     }
 
-    fn init_wayland_listener(
-        display: Display<Smallvil>,
-        event_loop: &mut EventLoop<CalloopData>,
-    ) -> OsString {
+    fn init_wayland_listener(display: Display<Self>, event_loop: &mut EventLoop<Self>) -> OsString {
         // Creates a new listening socket, automatically choosing the next available `wayland` socket name.
         let listening_socket = ListeningSocketSource::new_auto().unwrap();
 
@@ -133,7 +143,7 @@ impl Smallvil {
                 |_, display, state| {
                     // Safety: we don't drop the display
                     unsafe {
-                        display.get_mut().dispatch_clients(&mut state.state).unwrap();
+                        display.get_mut().dispatch_clients(state).unwrap();
                     }
                     Ok(PostAction::Continue)
                 },

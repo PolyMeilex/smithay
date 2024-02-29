@@ -5,7 +5,7 @@ use std::{
 
 use smithay::{
     backend::{
-        allocator::{gbm::GbmAllocator, Format, Fourcc},
+        allocator::{dmabuf::Dmabuf, gbm::GbmAllocator, Format, Fourcc},
         drm::{
             compositor::DrmCompositor, DrmDevice, DrmDeviceFd, DrmEvent, DrmEventMetadata, DrmNode, NodeType,
         },
@@ -16,6 +16,7 @@ use smithay::{
             damage::OutputDamageTracker,
             gles::GlesRenderer,
             multigpu::{gbm::GbmGlesBackend, GpuManager, MultiRenderer},
+            ImportDma, ImportEgl,
         },
         session::{libseat::LibSeatSession, Event as SessionEvent, Session},
         udev::{self, UdevBackend, UdevEvent},
@@ -27,8 +28,16 @@ use smithay::{
         gbm::{BufferObjectFlags as GbmBufferFlags, Device as GbmDevice},
         input::Libinput,
         rustix::fs::OFlags,
+        wayland_protocols::wp::linux_dmabuf::zv1::server::{
+            zwp_linux_buffer_params_v1::ZwpLinuxBufferParamsV1, zwp_linux_dmabuf_v1::ZwpLinuxDmabufV1,
+        },
+        wayland_server::{protocol::wl_buffer::WlBuffer, Dispatch, DisplayHandle, GlobalDispatch},
     },
     utils::{DeviceFd, Transform},
+    wayland::{
+        buffer::BufferHandler,
+        dmabuf::{DmabufGlobal, DmabufGlobalData, DmabufHandler, DmabufParamsData, ImportNotifier},
+    },
 };
 use smithay_drm_extras::{
     drm_scanner::{DrmScanEvent, DrmScanner},
@@ -140,6 +149,22 @@ pub struct DrmState<D> {
     udev: Dispatcher<'static, UdevBackend, D>,
 }
 
+impl<D: DrmBackendHandler> DrmState<D> {
+    pub fn dmabuf_imported(&mut self, _global: &DmabufGlobal, dmabuf: Dmabuf, notifier: ImportNotifier) {
+        if self
+            .gpu_manager
+            .single_renderer(&self.primary_gpu)
+            .and_then(|mut renderer| renderer.import_dmabuf(&dmabuf, None))
+            .is_ok()
+        {
+            dmabuf.set_node(self.primary_gpu);
+            let _ = notifier.successful::<D>();
+        } else {
+            notifier.failed();
+        }
+    }
+}
+
 pub struct DrmRenderRequest<'a> {
     pub gbm_compositor: &'a mut GbmDrmCompositor,
     pub output: &'a Output,
@@ -147,7 +172,15 @@ pub struct DrmRenderRequest<'a> {
     pub damage_tracker: &'a mut OutputDamageTracker,
 }
 
-pub trait DrmBackend: Sized {
+pub trait DrmBackendHandler:
+    Sized
+    + GlobalDispatch<ZwpLinuxDmabufV1, DmabufGlobalData>
+    + Dispatch<ZwpLinuxBufferParamsV1, DmabufParamsData>
+    + Dispatch<WlBuffer, Dmabuf>
+    + BufferHandler
+    + DmabufHandler
+    + 'static
+{
     fn drm_state(&self) -> &DrmState<Self>;
     fn drm_state_mut(&mut self) -> &mut DrmState<Self>;
 
@@ -158,8 +191,8 @@ pub trait DrmBackend: Sized {
     fn render_fn(&mut self) -> (&mut DrmState<Self>, impl FnOnce(DrmRenderRequest) -> bool);
 }
 
-impl<D: DrmBackend> DrmBackendImpl for D {}
-trait DrmBackendImpl: DrmBackend {
+impl<D: DrmBackendHandler> DrmBackendImpl for D {}
+trait DrmBackendImpl: DrmBackendHandler {
     fn on_session_event(&mut self, event: SessionEvent) {
         let state = self.drm_state_mut();
         match event {
@@ -377,7 +410,7 @@ trait DrmBackendImpl: DrmBackend {
     }
 }
 
-fn init_session<D: DrmBackend>(event_loop: &LoopHandle<D>) -> LibSeatSession {
+fn init_session<D: DrmBackendHandler>(event_loop: &LoopHandle<D>) -> LibSeatSession {
     let (session, event_source) = LibSeatSession::new().unwrap();
 
     event_loop
@@ -387,7 +420,7 @@ fn init_session<D: DrmBackend>(event_loop: &LoopHandle<D>) -> LibSeatSession {
     session
 }
 
-fn init_input<D: DrmBackend>(event_loop: &LoopHandle<D>, session: &LibSeatSession) -> Libinput {
+fn init_input<D: DrmBackendHandler>(event_loop: &LoopHandle<D>, session: &LibSeatSession) -> Libinput {
     let mut libinput =
         Libinput::new_with_udev::<LibinputSessionInterface<LibSeatSession>>(session.clone().into());
 
@@ -432,7 +465,7 @@ fn init_input<D: DrmBackend>(event_loop: &LoopHandle<D>, session: &LibSeatSessio
     libinput
 }
 
-fn init_udev<D: DrmBackend>(
+fn init_udev<D: DrmBackendHandler>(
     event_loop: &LoopHandle<'static, D>,
     session: &LibSeatSession,
 ) -> Dispatcher<'static, UdevBackend, D> {
@@ -442,7 +475,7 @@ fn init_udev<D: DrmBackend>(
     udev
 }
 
-pub fn init<D: DrmBackend>(event_loop: LoopHandle<'static, D>) -> DrmState<D> {
+pub fn init<D: DrmBackendHandler>(event_loop: LoopHandle<'static, D>) -> DrmState<D> {
     let session = init_session(&event_loop);
     let libinput = init_input(&event_loop, &session);
     let primary_gpu = primary_gpu(&session.seat()).0;
@@ -459,7 +492,7 @@ pub fn init<D: DrmBackend>(event_loop: LoopHandle<'static, D>) -> DrmState<D> {
     }
 }
 
-pub fn start<D: DrmBackend>(state: &mut D) {
+pub fn start<D: DrmBackendHandler>(dh: DisplayHandle, state: &mut D) {
     let devices: Vec<_> = state
         .drm_state_mut()
         .udev
@@ -474,6 +507,18 @@ pub fn start<D: DrmBackend>(state: &mut D) {
             path: path.to_owned(),
         });
     }
+
+    let drm_state = state.drm_state_mut();
+    let mut renderer = drm_state
+        .gpu_manager
+        .single_renderer(&drm_state.primary_gpu)
+        .unwrap();
+
+    renderer.bind_wl_display(&dh).unwrap();
+
+    // init dmabuf support with format list from our primary gpu
+    let dmabuf_formats = renderer.dmabuf_formats().collect::<Vec<_>>();
+    let _global = state.dmabuf_state().create_global::<D>(&dh, dmabuf_formats);
 }
 
 pub fn primary_gpu(seat: &str) -> (DrmNode, PathBuf) {
