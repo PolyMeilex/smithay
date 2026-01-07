@@ -514,7 +514,9 @@ pub fn start<D: DrmBackendHandler>(dh: DisplayHandle, state: &mut D) {
         .single_renderer(&drm_state.primary_gpu)
         .unwrap();
 
-    renderer.bind_wl_display(&dh).unwrap();
+    if let Err(err) = renderer.bind_wl_display(&dh) {
+        tracing::warn!("egl bind_wl_display err: {err}");
+    }
 
     // init dmabuf support with format list from our primary gpu
     let dmabuf_formats = renderer.dmabuf_formats().collect::<Vec<_>>();
